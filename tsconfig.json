@@ -19,7 +19,7 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./app/*"]
     }
   },
   "include": [
@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "app/(auth)/login/LoginForm.jsx", "app/components/InputError.js"  ],
   "exclude": ["node_modules"]
 }

@@ -1,26 +1,71 @@
 @import "tailwindcss";
+@import "@heroui/styles"; 
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-datia-primary: rgb(var(--datia-primary));
+  --color-datia-secondary: rgb(var(--datia-secondary));
+  --color-datia-gray: rgb(var(--datia-gray));
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* globals.css — add after your @theme block */
+@layer components {
+  .button--primary {
+    --button-bg: var(--color-datia-primary);
+    --button-bg-hover: color-mix(in srgb, var(--color-datia-primary) 85%, black);
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: white;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .button--secondary {
+    --button-bg: var(--color-datia-secondary);
+    --button-bg-hover: color-mix(in srgb, var(--color-datia-secondary) 85%, black);
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: var(--color-datia-primary); /* dark navy reads better than white on bright cyan */
+  }
+
+  .button--tertiary {
+    --button-bg: var(--color-datia-gray);
+    --button-bg-hover: color-mix(in srgb, var(--color-datia-gray) 85%, black);
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: white;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+html,body {
+  margin: 0;
+  padding: 0;
+  max-width: 100%;
+  min-height: 100vh;
+}
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: rgba(var(--datia-primary) / 0.10);
+  border-radius: 5rem;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: rgba(var(--datia-primary) / 0.60);
+  border-radius: 5rem;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--datia-primary) / 0.75);
+}
+
+::-webkit-scrollbar-button{
+  height: 3px;
+  background-color: transparent;
+}
+:root {
+  --datia-primary: 0 20 145;
+  --datia-secondary: 2 212 214;
+  --datia-gray: 115 122 131;
 }
