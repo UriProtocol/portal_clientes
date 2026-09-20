@@ -1,18 +1,15 @@
 "use client";
 
-import InputError from "@/components/InputError";
+import InputError from "@/components/auth/InputError";
 import { useAuth } from "@/hooks/auth/auth";
 import React, { useState } from "react";
 import AuthSessionStatus from "./AuthSessionStatus";
 import { InputGroup, Label, TextField } from "@heroui/react";
 import { Checkbox } from "@heroui/react";
 import { Button } from "@heroui/react";
-import { ibmPlexSans, manrope } from "@/ui/fonts";
+import { manrope } from "@/ui/fonts";
 import { toast } from "sonner";
-import { FaAsterisk, FaAt, FaEye, FaMailchimp, FaUser } from 'react-icons/fa6'
-import { FaMailBulk } from "react-icons/fa";
-import { CiAt } from "react-icons/ci";
-import { Toaster } from "sonner";
+import { FaAsterisk, FaAt, FaEye} from 'react-icons/fa6'
 
 const LoginForm = () => {
   const { login: loginFunction } = useAuth({
