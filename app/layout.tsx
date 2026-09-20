@@ -1,9 +1,9 @@
 "use client";
 import React, { useEffect } from "react";
 import "./globals.css";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/auth/auth";
-import AuthGuard from "@/components/AuthGuard";
+import AuthGuard from "@/components/auth/AuthGuard";
 import { manrope } from "./ui/fonts";
 import { Toaster } from "sonner";
 import { Providers } from "./providers";
