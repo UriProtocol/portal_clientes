@@ -51,7 +51,10 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
         await axios.post("api/portal/logout");
       }
     } finally {
-      await mutate();
+      // No usamos mutate() a secas: eso revalida contra /me, que ahora
+      // devuelve 401, y SWR conserva el "user" viejo en caché cuando una
+      // revalidación falla. Aquí lo limpiamos directamente sin refetch.
+      await mutate(null, { revalidate: false });
       router.replace("/login");
     }
   };
