@@ -7,7 +7,7 @@ import { Toaster } from "sonner";
 export default function LoginPage() {
     return (
         <div className=" bg-datia-primary">
-            <h1 className=" text-yellow-300/90 mr-3 font-semibold text-4xl absolute top-28 text-center text-shadow-2xs w-full">
+            <h1 className=" text-yellow-500 mr-3 font-semibold text-4xl absolute top-28 text-center text-shadow-2xs w-full">
                     PROVEEDORA DE LLANTAS 
             </h1>
             <h2 className=" text-white/90 mr-3 text-2xl absolute top-40 text-center text-shadow-2xs w-full">
