@@ -2,6 +2,7 @@ import Divider from "@/components/misc/Divider";
 import { useAuth } from "@/hooks/auth/auth";
 import { AlertDialog, Button, Drawer, Popover, Tabs } from "@heroui/react";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -9,6 +10,25 @@ import { useEffect, useState } from "react";
 import { FaBox, FaDollarSign, FaFileInvoice, FaHome } from "react-icons/fa";
 import { FaArrowDown, FaBagShopping, FaBell, FaChevronDown, FaGear, FaListUl } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
+import type { IconType } from "react-icons";
+
+function ScrollIcon({ show, icon: Icon }: { show: boolean; icon: IconType }) {
+    return (
+        <AnimatePresence initial={false}>
+            {show && (
+                <motion.span
+                    className="inline-flex text-xl mr-2"
+                    initial={{ opacity: 0, scale: 0.4, width: 0 }}
+                    animate={{ opacity: 1, scale: 1, width: "auto" }}
+                    exit={{ opacity: 0, scale: 0.4, width: 0 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                >
+                    <Icon />
+                </motion.span>
+            )}
+        </AnimatePresence>
+    )
+}
 
 export default function Header() {
     const { user, logout } = useAuth()
@@ -17,6 +37,7 @@ export default function Header() {
 
     const [isOpenDrawer, setIsOpenDrawer] = useState(false)
     const [tab, setTab] = useState<any>("/")
+    const [isScrolled, setIsScrolled] = useState(false)
 
     useEffect(() => {
         router.push(tab)
@@ -24,9 +45,21 @@ export default function Header() {
     useEffect(() => {
         setTab(pathname)
     }, [pathname])
+    useEffect(() => {
+        const handleScroll = () => setIsScrolled(window.scrollY > 30)
+        handleScroll()
+        window.addEventListener("scroll", handleScroll)
+        return () => window.removeEventListener("scroll", handleScroll)
+    }, [])
 
     return (
         <>
+
+            <div className={
+                clsx(
+                    " h-19 fixed w-full top-0 bg-datia-gray/10 backdrop-blur-[3px] hidden xl:block",
+                    !isScrolled && "opacity-0 -z-50"
+                 )} />
             <div className=" h-16 bg-white w-full shadow grid grid-cols-12 px-3">
                 <div
                     className=" col-span-2 items-center cursor-pointer hidden xl:flex"
@@ -41,11 +74,18 @@ export default function Header() {
                         width={62}
                     />
                     <p className="font-semibold text-datia-primary/90 text-lg ml-3">
-                        Proveedora De Llantas
+                        Portal de Clientes
                     </p>
                 </div>
                 <Drawer isOpen={isOpenDrawer} onOpenChange={setIsOpenDrawer}>
-                    <Button size="lg" className="my-auto bg-white p-7 top-1 left-3 rounded-full text-datia-primary/85 xl:hidden fixed z-50" isIconOnly>
+                    <Button
+                        size="lg"
+                        className={clsx(
+                            "my-auto bg-white p-7 top-1 left-3 rounded-full text-datia-primary/85 xl:hidden fixed z-50 transition-all",
+                            isScrolled && "shadow-lg top-2 left-4"
+                        )}
+                        isIconOnly
+                    >
                         <FaListUl className="scale-[1.6]" />
                     </Button>
                     <Drawer.Backdrop>
@@ -86,10 +126,10 @@ export default function Header() {
                                                     <p className=" text-3xl">Inicio</p>
                                                     <Tabs.Indicator />
                                                 </Tabs.Tab>
-                                                <Tabs.Tab  id="/pedidos" onPress={() => setIsOpenDrawer(false)}>
-                                                    <FaBagShopping className=" mr-2 text-3xl text-yellow-600/80" />
-                                                    <p className={clsx(" text-3xl text-yellow-600/65", tab =="/pedidos" && "text-yellow-600")}>Haz tu pedido</p>
-                                                    <Tabs.Indicator className=" bg-yellow-600!"/>
+                                                <Tabs.Tab id="/pedidos" onPress={() => setIsOpenDrawer(false)}>
+                                                    <FaBagShopping className=" mr-2 text-3xl text-datia-secondary/80" />
+                                                    <p className={clsx(" text-3xl text-datia-secondary/65", tab == "/pedidos" && "text-datia-secondary")}>Haz tu pedido</p>
+                                                    <Tabs.Indicator className=" bg-datia-setext-datia-secondary!" />
                                                 </Tabs.Tab>
                                                 <Tabs.Tab id="/seguimiento" onPress={() => setIsOpenDrawer(false)}>
                                                     <FaBox className=" mr-3 text-3xl" />
@@ -115,10 +155,15 @@ export default function Header() {
                         </Drawer.Content>
                     </Drawer.Backdrop>
                 </Drawer>
-                <div className="fixed top-1 right-3 flex gap-2 items-center justify-end z-50 rounded-2xl">
+                <div
+                    className={clsx(
+                        "fixed top-1 right-3 flex gap-2 items-center justify-end z-50 rounded-2xl transition-all",
+                        isScrolled && "top-3 right-4"
+                    )}
+                >
                     <Popover>
                         <Popover.Trigger>
-                            <div className="p-1.5 bg-white rounded-full">
+                            <div className={clsx("p-1.5 bg-white rounded-full", isScrolled && "shadow-lg")}>
                                 <Button
                                     isIconOnly
                                     size="lg"
@@ -141,7 +186,7 @@ export default function Header() {
 
                     <Popover>
                         <Popover.Trigger>
-                            <div className="p-1.5 rounded-4xl bg-white">
+                            <div className={clsx("p-1.5 rounded-4xl bg-white", isScrolled && "shadow")}>
                                 <Button
                                     variant="tertiary"
                                     size="lg"
@@ -198,7 +243,19 @@ export default function Header() {
                     </Popover>
                 </div>
             </div>
-            <div className="bg-white p-1.5 fixed left-1/2 -translate-x-1/2 top-1.5 hidden xl:block z-50 w-full max-w-4xl rounded-3xl">
+            <motion.div
+                className={clsx(
+                    "bg-white p-1.5 fixed hidden xl:block z-50 w-full max-w-4xl rounded-3xl transition-shadow duration-300 ease-out",
+                    isScrolled && "shadow"
+                )}
+                initial={false}
+                animate={{
+                    top: isScrolled ? 12 : 6,
+                    left: isScrolled ? 16 : "50%",
+                    x: isScrolled ? 0 : "-50%",
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
+            >
                 <Tabs className="w-full" variant="primary" selectedKey={tab} onSelectionChange={setTab}>
                     <Tabs.ListContainer className=" bg-transparent">
                         <Tabs.List
@@ -209,33 +266,48 @@ export default function Header() {
                             "
                         >
                             <Tabs.Tab id="/">
-                                <Link href={"/"} className=" text-[1.05rem] w-full">Inicio</Link>
+                                <Link href={"/"} className=" text-[1.05rem] w-full flex items-center justify-center gap-1.5">
+                                    <ScrollIcon show={isScrolled} icon={FaHome} />
+                                    Inicio
+                                </Link>
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                             <Tabs.Tab id="/pedidos">
-                                <Link href={"/pedidos"} className={clsx(" text-[1.05rem] text-yellow-600", tab == "/pedidos" && "text-white!")}>Haz tu pedido</Link>
-                                <Tabs.Separator/>
-                                <Tabs.Indicator className="bg-yellow-600!"/>
+                                <Link href={"/pedidos"} className={clsx(" text-[1.05rem] text-datia-secondary flex items-center justify-center gap-1.5 text-nowrap", tab == "/pedidos" && "text-white!")}>
+                                    <ScrollIcon show={isScrolled} icon={FaBagShopping} />
+                                    Haz tu pedido
+                                </Link>
+                                <Tabs.Separator />
+                                <Tabs.Indicator className="bg-datia-setext-datia-secondary!" />
                             </Tabs.Tab>
                             <Tabs.Tab id="/seguimiento">
-                                <Link href={"/seguimiento"} className=" text-[1.05rem]">Seguimiento</Link>
-                                <Tabs.Separator/>
+                                <Link href={"/seguimiento"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
+                                    <ScrollIcon show={isScrolled} icon={FaBox} />
+                                    Seguimiento
+                                </Link>
+                                <Tabs.Separator />
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                             <Tabs.Tab id="/estado-cuenta">
-                                <Link href={"/estado-cuenta"} className=" text-[1.05rem]">Estado de cuenta</Link>
-                                <Tabs.Separator/>
+                                <Link href={"/estado-cuenta"} className=" text-[1.05rem] flex items-center justify-center gap-1.5 text-nowrap">
+                                    <ScrollIcon show={isScrolled} icon={FaDollarSign} />
+                                    Estado de cuenta
+                                </Link>
+                                <Tabs.Separator />
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                             <Tabs.Tab id="/facturas">
-                                <Link href={"/facturas"} className=" text-[1.05rem]">Facturas</Link>
-                                <Tabs.Separator/>
+                                <Link href={"/facturas"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
+                                    <ScrollIcon show={isScrolled} icon={FaFileInvoice} />
+                                    Facturas
+                                </Link>
+                                <Tabs.Separator />
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                         </Tabs.List>
                     </Tabs.ListContainer>
                 </Tabs>
-            </div>
+            </motion.div>
         </>
     )
 }
