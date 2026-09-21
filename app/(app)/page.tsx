@@ -43,8 +43,8 @@ export default function Dashboard() {
           </Card.Footer>
         </Card>
         <Card>
-            <Chip className=" p-4 rounded-full mx-auto bg-yellow-600/20">
-            <FaFileInvoice className="text-xl text-yellow-600"/>
+            <Chip className=" p-4 rounded-full mx-auto bg-datia-secondary/20">
+            <FaFileInvoice className="text-xl text-datia-secondary"/>
           </Chip>
           <Card.Header>
             <Card.Title className=" font-semibold text-xl mt-1 mb-4">Descargar facturas</Card.Title>
@@ -54,7 +54,7 @@ export default function Dashboard() {
           </Card.Header>
           <Card.Footer>
             <Link href={"/facturas"} className="mx-auto mt-1">
-              <Button size="lg"  className="bg-yellow-600 hover:opacity-90 text-white">
+              <Button size="lg"  variant="secondary">
                   Ver facturas
                   <FaArrowRight />
               </Button>
