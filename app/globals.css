@@ -11,7 +11,7 @@
 @layer components {
   .button--primary {
     --button-bg: var(--color-datia-primary);
-    --button-bg-hover: color-mix(in srgb, var(--color-datia-primary) 85%, black);
+    --button-bg-hover: color-mix(in srgb, var(--color-datia-primary) 85%, white);
     --button-bg-pressed: var(--button-bg-hover);
     --button-fg: white;
   }
@@ -20,7 +20,7 @@
     --button-bg: var(--color-datia-secondary);
     --button-bg-hover: color-mix(in srgb, var(--color-datia-secondary) 85%, black);
     --button-bg-pressed: var(--button-bg-hover);
-    --button-fg: var(--color-datia-primary); /* dark navy reads better than white on bright cyan */
+    --button-fg: white; /* dark navy reads better than white on bright cyan */
   }
 
   .button--tertiary {
@@ -66,6 +66,6 @@ html,body {
 }
 :root {
   --datia-primary: 0 20 145;
-  --datia-secondary: 2 212 214;
+  --datia-secondary: 208 135 0;
   --datia-gray: 115 122 131;
 }
