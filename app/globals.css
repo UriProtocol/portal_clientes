@@ -29,6 +29,18 @@
     --button-bg-pressed: var(--button-bg-hover);
     --button-fg: white;
   }
+  .button--danger {
+    --button-bg: var(--color-red-700);
+    --button-bg-hover: color-mix(in srgb, var(--color-red-700) 85%, black);
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: white;
+  }
+  .button--success {
+    --button-bg: var(--color-green-700);
+    --button-bg-hover: color-mix(in srgb, var(--color-green-700) 85%, black);
+    --button-bg-pressed: var(--button-bg-hover);
+    --button-fg: white;
+  }
 }
 
 html,body {
