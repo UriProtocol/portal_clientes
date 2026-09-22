@@ -14,7 +14,7 @@ import { toast } from "sonner"
 import useSWR from "swr"
 import InvoiceInfoModal from "./invoiceInfoModal"
 
-const fetcher = ([url, page, query]: [string, string, string]) => axios.get(url, {params: {page, query}}).then(res => res.data)
+const fetcher = ([url, page, query]: [string, string, string]) => axios.get(url, { params: { page, query } }).then(res => res.data)
 
 type DateRange = {
     start: DateValue;
@@ -23,117 +23,117 @@ type DateRange = {
 
 
 export interface Invoice {
-  id: number;
-  uuid: string;
-  serie: string;
-  folio: string;
-  type: string;
+    id: number;
+    uuid: string;
+    serie: string;
+    folio: string;
+    type: string;
 
-  payment_method: string;
-  payment_type: string;
-  uso_cfdi: string;
-  amount: string;
-  status: string;
+    payment_method: string;
+    payment_type: string;
+    uso_cfdi: string;
+    amount: string;
+    status: string;
 
-  customer_envoice_information: InvoiceCustomerInformation;
-  customer_uuid: string;
-  branch_uuid: string;
-  destination_location_uuid: string | null;
-  payment_complement_uuid: string | null;
+    customer_envoice_information: InvoiceCustomerInformation;
+    customer_uuid: string;
+    branch_uuid: string;
+    destination_location_uuid: string | null;
+    payment_complement_uuid: string | null;
 
-  xml: string;
-  timbre: InvoiceTimbre | null;
-  invoice_certification_date: string | null;
-  is_validated: number;
-  comment: string | null;
-  deleted_at: string | null;
+    xml: string;
+    timbre: InvoiceTimbre | null;
+    invoice_certification_date: string | null;
+    is_validated: number;
+    comment: string | null;
+    deleted_at: string | null;
 
-  created_at: string;
-  updated_at: string;
+    created_at: string;
+    updated_at: string;
 
-  credit_notes: unknown[];
-  tickets: InvoiceTicket[];
+    credit_notes: unknown[];
+    tickets: InvoiceTicket[];
 
-  payment_complement: any; //TODO
-  transfers: any[]; //TODO
+    payment_complement: any; //TODO
+    transfers: any[]; //TODO
 }
 
 export interface InvoiceCustomerInformation {
-  rfc: string;
-  name: string;
-  email: string | null;
-  code_zip: string;
-  tax_regime: string;
+    rfc: string;
+    name: string;
+    email: string | null;
+    code_zip: string;
+    tax_regime: string;
 }
 
 export interface InvoiceTimbre {
-  UUID: string;
-  Estado: string;
-  SelloCFD: string;
-  SelloSAT: string;
-  FechaTimbrado: string;
-  NumeroCertificadoSAT: string;
+    UUID: string;
+    Estado: string;
+    SelloCFD: string;
+    SelloSAT: string;
+    FechaTimbrado: string;
+    NumeroCertificadoSAT: string;
 }
 
 export interface InvoiceTicket {
-  id: number;
-  uuid: string;
-  folio: string;
-  number_customer: number;
+    id: number;
+    uuid: string;
+    folio: string;
+    number_customer: number;
 
-  amount: string;
-  iva: string;
-  sub_total: string;
-  status: string;
-  change: string;
+    amount: string;
+    iva: string;
+    sub_total: string;
+    status: string;
+    change: string;
 
-  type_sale: string;
-  status_credit: string;
-  balance: string;
+    type_sale: string;
+    status_credit: string;
+    balance: string;
 
-  status_history_uuid: string;
-  user_uuid: string;
-  customer_uuid: string;
-  branch_uuid: string;
-  remission_uuid: string;
-  cash_count_uuid: string;
-  agent_uuid: string;
+    status_history_uuid: string;
+    user_uuid: string;
+    customer_uuid: string;
+    branch_uuid: string;
+    remission_uuid: string;
+    cash_count_uuid: string;
+    agent_uuid: string;
 
-  ticket_cash_advance_uuid: string | null;
+    ticket_cash_advance_uuid: string | null;
 
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
+    deleted_at: string | null;
+    created_at: string;
+    updated_at: string;
 
-  laravel_through_key: string;
+    laravel_through_key: string;
 
-  customer_deposits: InvoiceCustomerDeposit[];
+    customer_deposits: InvoiceCustomerDeposit[];
 }
 
 export interface InvoiceCustomerDeposit {
-  id: number;
-  uuid: string;
-  reference: number;
-  amount: string;
-  concept: string;
-  payment_method: string;
+    id: number;
+    uuid: string;
+    reference: number;
+    amount: string;
+    concept: string;
+    payment_method: string;
 
-  terminal_uuid: string | null;
-  status: string;
-  branch_uuid: string;
-  customer_uuid: string;
-  user_uuid: string;
-  cash_count_uuid: string;
+    terminal_uuid: string | null;
+    status: string;
+    branch_uuid: string;
+    customer_uuid: string;
+    user_uuid: string;
+    cash_count_uuid: string;
 
-  ticket_uuid: string | null;
-  invoice_uuid: string | null;
-  credit_balance_uuid: string | null;
+    ticket_uuid: string | null;
+    invoice_uuid: string | null;
+    credit_balance_uuid: string | null;
 
-  deleted_at: string | null;
-  created_at: string;
-  updated_at: string;
+    deleted_at: string | null;
+    created_at: string;
+    updated_at: string;
 
-  payment_complement: unknown | null;
+    payment_complement: unknown | null;
 }
 
 const start = today(getLocalTimeZone());
@@ -148,6 +148,19 @@ const columns: DataTableColumn<Invoice>[] = [
     {
         label: "Método de pago",
         key: "payment_method",
+        render: (invoice) => (
+            <div className="flex justify-center">
+                <Tooltip delay={400}>
+                    <Tooltip.Trigger>
+                        <p>{invoice.payment_method.substring(0, 3)}</p>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                        {invoice.payment_method}
+                    </Tooltip.Content>
+                </Tooltip>
+            </div>
+        )
+
     },
     {
         label: "Total",
@@ -163,11 +176,11 @@ const columns: DataTableColumn<Invoice>[] = [
         key: "balance",
         render: (invoice) => {
             if (invoice.payment_method?.startsWith('PUE')) return '$0.00'
-            if(invoice.tickets.length > 0){
-                return "$" + invoice.tickets.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0),0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumfractionDigits: 2})
+            if (invoice.tickets.length > 0) {
+                return "$" + invoice.tickets.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })
             }
-            if(invoice.transfers.length > 0){
-                return "$" + invoice.transfers.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0),0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumfractionDigits: 2})
+            if (invoice.transfers.length > 0) {
+                return "$" + invoice.transfers.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })
             }
         },
     },
@@ -177,9 +190,9 @@ const columns: DataTableColumn<Invoice>[] = [
         render: ({ status }) => {
             switch (status) {
                 case "Timbrado":
-                    return <Chip size="lg" className="bg-success text-white">{status}</Chip>
+                    return <Chip size="lg" className="bg-green-700/80 text-white">{status}</Chip>
                 case "Cancelado":
-                    return <Chip size="lg" className="bg-danger text-white">{status}</Chip>
+                    return <Chip size="lg" className="bg-red-700/80 text-white">{status}</Chip>
                 default:
                     return <Chip size="lg" className="bg-datia-gray">{status}</Chip>
             }
@@ -269,7 +282,7 @@ const columns: DataTableColumn<Invoice>[] = [
                             Descargar archivo XML
                         </Tooltip.Content>
                     </Tooltip>
-                    <InvoiceInfoModal invoice={invoice}/>
+                    <InvoiceInfoModal invoice={invoice} />
                 </div>
             )
         }
@@ -280,7 +293,7 @@ export default function Facturas() {
 
     const searchParams = useSearchParams()
     const page = Number(searchParams.get("page")) || 1
-    const query = Number(searchParams.get("query")) || ""
+    const query = searchParams.get("query") || ""
 
     const { data, isLoading, isValidating } = useSWR(['/api/portal/invoices', page, query], fetcher, { keepPreviousData: true })
 
@@ -291,15 +304,15 @@ export default function Facturas() {
     const lastPage = data?.last_page ?? 1
 
     return (
-        <div className=" mt-4">
+        <div className="mt-2">
             <div className=" max-w-4xl mx-auto">
                 <h1 className="font-semibold text-4xl text-datia-primary">Mis facturas</h1>
-                <h2 className="text-datia-gray text-lg my-4">
+                <h2 className="text-datia-gray my-3">
                     Listado de facturas y descarga de PDF, XML, y documentos asociados
                 </h2>
             </div>
             <Divider />
-            <div className="flex flex-col gap-4 mt-5 max-w-4xl mx-auto">
+            <div className="flex flex-col gap-4 mt-3 max-w-4xl mx-auto">
                 <div className="flex gap-3 items-end flex-wrap sm:flex-nowrap">
                     <QueryInput placeholder="Buscar por folio..." />
                     <Select className="w-full sm:w-fit sm:min-w-44" placeholder="Todos los estatus">
