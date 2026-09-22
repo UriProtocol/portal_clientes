@@ -270,7 +270,7 @@ export default function DataTable<T extends object>({
                                 ) : (
                                     <Pagination.Item key={page}>
                                         <Pagination.Link
-                                            className={clsx(" text-white bg-datia-primary/25", page === pagination.currentPage && "bg-datia-primary/85")}
+                                            className={clsx(" text-white bg-datia-primary/25", page === pagination.currentPage && "bg-datia-primary!")}
                                             isActive={
                                                 page ===
                                                 pagination.currentPage
