@@ -8,27 +8,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaBox, FaDollarSign, FaFileInvoice, FaHome } from "react-icons/fa";
-import { FaArrowDown, FaBagShopping, FaBell, FaChevronDown, FaGear, FaListUl } from "react-icons/fa6";
+import { FaBagShopping, FaBell, FaChevronDown, FaGear, FaListUl } from "react-icons/fa6";
 import { MdLogout } from "react-icons/md";
 import type { IconType } from "react-icons";
 
-function ScrollIcon({ show, icon: Icon }: { show: boolean; icon: IconType }) {
-    return (
-        <AnimatePresence initial={false}>
-            {show && (
-                <motion.span
-                    className="inline-flex text-xl mr-2"
-                    initial={{ opacity: 0, scale: 0.4, width: 0 }}
-                    animate={{ opacity: 1, scale: 1, width: "auto" }}
-                    exit={{ opacity: 0, scale: 0.4, width: 0 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                >
-                    <Icon />
-                </motion.span>
-            )}
-        </AnimatePresence>
-    )
-}
 
 export default function Header() {
     const { user, logout } = useAuth()
@@ -57,14 +40,26 @@ export default function Header() {
 
             <div className={
                 clsx(
-                    " h-19 fixed w-full top-0 bg-datia-gray/10 backdrop-blur-[3px] hidden xl:block",
+                    " h-19 fixed w-full top-0 bg-datia-gray/10 backdrop-blur-[3px] hidden xl:block z-40",
                     !isScrolled && "opacity-0 -z-50"
-                 )} />
+                )} />
             <div className=" h-16 bg-white w-full shadow grid grid-cols-12 px-3">
-                <div
-                    className=" col-span-2 items-center cursor-pointer hidden xl:flex"
+                <motion.div
+                    className={clsx(
+                        "col-span-2 items-center cursor-pointer hidden xl:flex fixed top-1 left-4 z-50 transition-all",
+                        isScrolled && "top-3 left-5"
+
+                    )}
                     onClick={() => {
                         router.push("/")
+                    }}
+                    initial={{
+                        x: -20,
+                        opacity: 0
+                    }}
+                    animate={{
+                        x: 0,
+                        opacity: 1
                     }}
                 >
                     <Image
@@ -72,22 +67,31 @@ export default function Header() {
                         alt="Logo"
                         height={62}
                         width={62}
+                        className=" rounded-full"
                     />
-                    <p className="font-semibold text-datia-primary/90 text-lg ml-3">
+                    <p className={clsx(
+                        "font-semibold text-datia-primary/90 text-lg ml-3 transition-all",
+                        isScrolled && "opacity-0"
+                    )}>
                         Portal de Clientes
                     </p>
-                </div>
+                </motion.div>
                 <Drawer isOpen={isOpenDrawer} onOpenChange={setIsOpenDrawer}>
-                    <Button
-                        size="lg"
-                        className={clsx(
-                            "my-auto bg-white p-7 top-1 left-3 rounded-full text-datia-primary/85 xl:hidden fixed z-50 transition-all",
-                            isScrolled && "shadow-lg top-2 left-4"
-                        )}
-                        isIconOnly
+                    <motion.div
+                        initial={{
+                            x: -20,
+                            opacity: 0
+                        }}
+                        animate={{
+                            x: 0,
+                            opacity: 1
+                        }}
+                        className="my-auto top-1 left-3 rounded-full  xl:hidden fixed z-50"
                     >
-                        <FaListUl className="scale-[1.6]" />
-                    </Button>
+                        <Button size="lg" className="bg-white p-7 text-datia-primary/85" isIconOnly>
+                            <FaListUl className="scale-[1.6]" />
+                        </Button>
+                    </motion.div>
                     <Drawer.Backdrop>
                         <Drawer.Content placement="left">
                             <Drawer.Dialog className="w-full">
@@ -163,7 +167,20 @@ export default function Header() {
                 >
                     <Popover>
                         <Popover.Trigger>
-                            <div className={clsx("p-1.5 bg-white rounded-full", isScrolled && "shadow-lg")}>
+                            <motion.div
+                                className={clsx("p-1.5 bg-white rounded-full", isScrolled && "shadow-lg")}
+                                initial={{
+                                    x: 10,
+                                    opacity: 0
+                                }}
+                                animate={{
+                                    x: 0,
+                                    opacity: 1
+                                }}
+                                transition={{
+                                    delay: 0.1
+                                }}
+                            >
                                 <Button
                                     isIconOnly
                                     size="lg"
@@ -171,10 +188,10 @@ export default function Header() {
                                     className=""
                                 >
                                     <FaBell />
-                                    <div className="absolute h-4 w-4 -top-0.5 -right-0.5 bg-red-600 rounded-full border-2">
+                                    <div className="absolute h-4 w-4 -top-0.5 -right-0.5 bg-red-600 rounded-full border-2 border-white">
                                     </div>
                                 </Button>
-                            </div>
+                            </motion.div>
                         </Popover.Trigger>
                         <Popover.Content>
                             <Popover.Dialog>
@@ -186,7 +203,17 @@ export default function Header() {
 
                     <Popover>
                         <Popover.Trigger>
-                            <div className={clsx("p-1.5 rounded-4xl bg-white", isScrolled && "shadow")}>
+                            <motion.div
+                                className={clsx("p-1.5 rounded-4xl bg-white", isScrolled && "shadow")}
+                                initial={{
+                                    x: 20,
+                                    opacity: 0
+                                }}
+                                animate={{
+                                    x: 0,
+                                    opacity: 1
+                                }}
+                            >
                                 <Button
                                     variant="tertiary"
                                     size="lg"
@@ -195,7 +222,7 @@ export default function Header() {
                                     Mi perfil
                                     <FaChevronDown className=" ml-2" />
                                 </Button>
-                            </div>
+                            </motion.div>
                         </Popover.Trigger>
                         <Popover.Content>
                             <Popover.Dialog>
@@ -248,11 +275,17 @@ export default function Header() {
                     "bg-white p-1.5 fixed hidden xl:block z-50 w-full max-w-4xl rounded-3xl transition-shadow duration-300 ease-out",
                     isScrolled && "shadow"
                 )}
-                initial={false}
-                animate={{
+                initial={{
+                    opacity: 0,
                     top: isScrolled ? 12 : 6,
                     left: isScrolled ? 16 : "50%",
                     x: isScrolled ? 0 : "-50%",
+                }}
+                animate={{
+                    top: isScrolled ? 12 : 6,
+                    left: isScrolled ? 95 : "50%",
+                    x: isScrolled ? 0 : "-50%",
+                    opacity: 1
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30, mass: 0.8 }}
             >
@@ -267,22 +300,22 @@ export default function Header() {
                         >
                             <Tabs.Tab id="/">
                                 <Link href={"/"} className=" text-[1.05rem] w-full flex items-center justify-center gap-1.5">
-                                    <ScrollIcon show={isScrolled} icon={FaHome} />
+                                    <FaHome className=" mr-2 text-lg"/>
                                     Inicio
                                 </Link>
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                             <Tabs.Tab id="/pedidos">
                                 <Link href={"/pedidos"} className={clsx(" text-[1.05rem] text-datia-secondary flex items-center justify-center gap-1.5 text-nowrap", tab == "/pedidos" && "text-white!")}>
-                                    <ScrollIcon show={isScrolled} icon={FaBagShopping} />
+                                    <FaBagShopping className=" mr-2 text-lg"/>
                                     Haz tu pedido
                                 </Link>
                                 <Tabs.Separator />
-                                <Tabs.Indicator className="bg-datia-setext-datia-secondary!" />
+                                <Tabs.Indicator className="bg-datia-secondary!" />
                             </Tabs.Tab>
                             <Tabs.Tab id="/seguimiento">
                                 <Link href={"/seguimiento"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
-                                    <ScrollIcon show={isScrolled} icon={FaBox} />
+                                    <FaBox className=" mr-2 text-lg"/>
                                     Seguimiento
                                 </Link>
                                 <Tabs.Separator />
@@ -290,7 +323,7 @@ export default function Header() {
                             </Tabs.Tab>
                             <Tabs.Tab id="/estado-cuenta">
                                 <Link href={"/estado-cuenta"} className=" text-[1.05rem] flex items-center justify-center gap-1.5 text-nowrap">
-                                    <ScrollIcon show={isScrolled} icon={FaDollarSign} />
+                                    <FaDollarSign className=" mr-2 text-lg"/>
                                     Estado de cuenta
                                 </Link>
                                 <Tabs.Separator />
@@ -298,7 +331,7 @@ export default function Header() {
                             </Tabs.Tab>
                             <Tabs.Tab id="/facturas">
                                 <Link href={"/facturas"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
-                                    <ScrollIcon show={isScrolled} icon={FaFileInvoice} />
+                                    <FaFileInvoice className=" mr-2 text-lg"/>
                                     Facturas
                                 </Link>
                                 <Tabs.Separator />
