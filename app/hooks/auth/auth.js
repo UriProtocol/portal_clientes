@@ -27,7 +27,9 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
 
   const csrf = () => axiosBase.get("sanctum/csrf-cookie");
 
-  const login = async ({ setErrors, setStatus, ...props }) => {
+  // "login" acepta correo electrónico o nombre de usuario; el backend
+  // decide contra qué campo autenticar.
+  const login = async ({ setErrors, setStatus, login, password, remember }) => {
     // Planta la cookie XSRF-TOKEN antes de mandar el POST.
     await csrf();
 
@@ -35,7 +37,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     setStatus(null);
 
     try {
-      await axios.post("/login", props);
+      await axios.post("/login", { login: login?.trim(), password, remember });
       await mutate();
       router.replace("/");
     } catch (error) {

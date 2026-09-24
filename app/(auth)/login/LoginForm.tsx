@@ -9,7 +9,7 @@ import { Checkbox } from "@heroui/react";
 import { Button } from "@heroui/react";
 import { manrope } from "@/ui/fonts";
 import { toast } from "sonner";
-import { FaAsterisk, FaAt, FaEye} from 'react-icons/fa6'
+import { FaAsterisk, FaAt, FaEye, FaUser} from 'react-icons/fa6'
 
 const LoginForm = () => {
   const { login: loginFunction } = useAuth({
@@ -17,7 +17,7 @@ const LoginForm = () => {
     redirectIfAuthenticated: "/",
   });
 
-  const [email, setEmail] = useState("");
+  const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
   const [shouldRemember, setShouldRemember] = useState(true);
   const [errors, setErrors] = useState<any>(null);
@@ -25,15 +25,6 @@ const LoginForm = () => {
   const [isLoadingLogin, setIsLoadingLoading] = useState(false)
 
   const [passType, setPassType] = useState("password")
-
-  const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-
-  const validateEmail = (login: string) => login.match(regex);
-  const isInvalid = React.useMemo(() => {
-    if (email === "") return false;
-
-    return validateEmail(email) ? false : true;
-  }, [email]);
 
   const submitForm = async (event: React.SubmitEvent) => {
     event.preventDefault();
@@ -43,7 +34,7 @@ const LoginForm = () => {
 
     try {
       await loginFunction({
-        email,
+        login,
         password,
         remember: shouldRemember,
         setErrors,
@@ -66,19 +57,18 @@ const LoginForm = () => {
         <TextField
           isRequired
           id="login"
-          type="email"
-          value={email}
-          onChange={setEmail}
-          isInvalid={isInvalid}
+          type="text"
+          value={login}
+          onChange={setLogin}
+          autoComplete="username"
         >
-          <Label className=" mb-1">Ingresar correo electrónico</Label>
+          <Label className=" mb-1">Ingresar correo electrónico o usuario</Label>
           <InputGroup>
             <InputGroup.Input
-              color={isInvalid ? "danger" : "default"}
-              placeholder="email@email.com"
+              placeholder="email@email.com o usuario"
             />
             <InputGroup.Suffix>
-              <FaAt className=" text-gray-300" />
+              <FaUser className=" text-gray-300" />
             </InputGroup.Suffix>
           </InputGroup>
         </TextField>
@@ -94,7 +84,6 @@ const LoginForm = () => {
           <Label className=" mb-1">Ingresar contraseña</Label>
           <InputGroup>
             <InputGroup.Input
-              color={isInvalid ? "danger" : "default"}
               placeholder="Tu contraseña"
             />
             <InputGroup.Suffix>
