@@ -1,26 +1,23 @@
 "use client"
+import DateRangeFilter from "@/components/misc/DateRangeFilter"
 import Divider from "@/components/misc/Divider"
 import QueryInput from "@/components/misc/QueryInput"
 import DataTable, { DataTableColumn } from "@/components/table/DataTable"
 import { axios } from "@/lib/axios"
-import { DateField, DateRangePicker, Label, RangeCalendar, Select, ListBox, Chip, Button, Tooltip } from "@heroui/react"
-import { DateValue, getLocalTimeZone, today } from "@internationalized/date"
-import { useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { Label, Select, ListBox, Chip, Button, Tooltip } from "@heroui/react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import type { Key } from "react-aria-components"
+import { useCallback } from "react"
 import { FaFileInvoice } from "react-icons/fa"
 import { FaFilePdf } from "react-icons/fa6";
 import { LuCodeXml } from "react-icons/lu"
 import { toast } from "sonner"
 import useSWR from "swr"
 import InvoiceInfoModal from "./invoiceInfoModal"
+import clsx from "clsx"
+import { motion } from 'framer-motion'
 
-const fetcher = ([url, page, query]: [string, string, string]) => axios.get(url, { params: { page, query } }).then(res => res.data)
-
-type DateRange = {
-    start: DateValue;
-    end: DateValue;
-};
-
+const fetcher = ([url, page, query, sortBy, sortDirection, startDate, endDate, status]: [string, string, string, string, string, string, string, string]) => axios.get(url, { params: { page, query, sortBy, sortDirection, startDate, endDate, status } }).then(res => res.data)
 
 export interface Invoice {
     id: number;
@@ -51,10 +48,10 @@ export interface Invoice {
     created_at: string;
     updated_at: string;
 
-    credit_notes: unknown[];
+    credit_notes: CreditNote[];
     tickets: InvoiceTicket[];
 
-    payment_complement: any; //TODO
+    payment_complement: PaymentComplement | null; //TODO
     transfers: any[]; //TODO
 }
 
@@ -133,21 +130,37 @@ export interface InvoiceCustomerDeposit {
     created_at: string;
     updated_at: string;
 
-    payment_complement: unknown | null;
+    payment_complement: PaymentComplement | null;
 }
 
-const start = today(getLocalTimeZone());
+export interface CreditNote {
+    uuid: string,
+    folio: string,
+    credit_note_certification_date: string,
+    amount: string
+    xml: string
+    status: string
+}
+export interface PaymentComplement {
+    uuid: string,
+    folio: string,
+    complement_certification_date: string,
+    xml: string
+    status: string
+}
 
 const columns: DataTableColumn<Invoice>[] = [
     {
         label: "Folio",
         key: "folio",
         isRowHeader: true,
+        sortable: true,
         render: (invoice) => <p className=" text-nowrap">{invoice.serie} - {invoice.folio}</p>
     },
     {
         label: "Método de pago",
         key: "payment_method",
+        sortable: true,
         render: (invoice) => (
             <div className="flex justify-center">
                 <Tooltip delay={400}>
@@ -177,21 +190,26 @@ const columns: DataTableColumn<Invoice>[] = [
         render: (invoice) => {
             if (invoice.payment_method?.startsWith('PUE')) return '$0.00'
             if (invoice.tickets.length > 0) {
-                return "$" + invoice.tickets.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })
+                const amount = invoice.tickets.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0)
+                return <p className={clsx(amount > 0 ? "text-red-800" : "text-green-800")}>${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })}</p>
             }
             if (invoice.transfers.length > 0) {
-                return "$" + invoice.transfers.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })
+                const amount = invoice.transfers.reduce((acc: any, cur: any) => acc + Number(cur.balance ?? 0), 0)
+                return <p className={clsx(amount > 0 ? "text-red-800" : "text-green-800")}>${amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumfractionDigits: 2 })}</p>
             }
         },
     },
     {
         label: "Estatus",
         key: "status",
+        sortable: true,
         render: ({ status }) => {
             switch (status) {
                 case "Timbrado":
                     return <Chip size="lg" className="bg-green-700/80 text-white">{status}</Chip>
                 case "Cancelado":
+                    return <Chip size="lg" className="bg-red-700/80 text-white">{status}</Chip>
+                case "Pendiente de cancelación":
                     return <Chip size="lg" className="bg-red-700/80 text-white">{status}</Chip>
                 default:
                     return <Chip size="lg" className="bg-datia-gray">{status}</Chip>
@@ -201,12 +219,7 @@ const columns: DataTableColumn<Invoice>[] = [
     {
         label: "Fecha de certificación",
         key: "invoice_certification_date",
-        render: (invoice) =>
-            invoice.invoice_certification_date
-                ? new Date(
-                    invoice.invoice_certification_date,
-                ).toLocaleDateString("es-MX")
-                : "-",
+        sortable: true,
     },
     {
         label: "Acciones",
@@ -229,7 +242,7 @@ const columns: DataTableColumn<Invoice>[] = [
 
             const handleDownloadPDF = async () => {
                 toast.promise(
-                    axios.get(`api/portal/invoices/${invoice.uuid}/pdf`, {
+                    axios.get(`/invoices/${invoice.uuid}/pdf`, {
                         responseType: "blob",
                     }),
                     {
@@ -292,13 +305,25 @@ const columns: DataTableColumn<Invoice>[] = [
 export default function Facturas() {
 
     const searchParams = useSearchParams()
+    const pathname = usePathname()
+    const router = useRouter()
     const page = Number(searchParams.get("page")) || 1
     const query = searchParams.get("query") || ""
+    const sortBy = searchParams.get("sortBy") || "id"
+    const sortDirection = searchParams.get("sortDirection") || "desc"
+    const startDate = searchParams.get("startDate") || ""
+    const endDate = searchParams.get("endDate") || ""
+    const status = searchParams.get("status")
 
-    const { data, isLoading, isValidating } = useSWR(['/api/portal/invoices', page, query], fetcher, { keepPreviousData: true })
+    const handleStatusChange = useCallback((key: Key | null) => {
+        const params = new URLSearchParams(searchParams.toString())
+        if (key) params.set("status", String(key))
+        else params.delete("status")
+        params.set("page", "1")
+        router.push(`${pathname}?${params.toString()}`, { scroll: false })
+    }, [pathname, router, searchParams])
 
-    const [value, setValue] = useState<DateRange | null>({ end: start, start });
-
+    const { data, isLoading, isValidating } = useSWR(['/invoices', page, query, sortBy, sortDirection, startDate, endDate, status], fetcher, { keepPreviousData: true })
 
     const currentPage = data?.current_page ?? page
     const lastPage = data?.last_page ?? 1
@@ -306,18 +331,62 @@ export default function Facturas() {
     return (
         <div className="mt-2">
             <div className=" max-w-4xl mx-auto">
-                <h1 className="font-semibold text-4xl text-datia-primary">Mis facturas</h1>
-                <h2 className="text-datia-gray my-3">
+                <motion.h1
+                    initial={{
+                        y: -10,
+                        opacity: 0
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                    className="font-semibold text-4xl"
+                >
+                    Mis facturas
+                </motion.h1>
+                <motion.h2
+                    initial={{
+                        y: -10,
+                        opacity: 0
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                    transition={{
+                        delay: 0.2
+                    }}
+                    className="text-datia-gray mt-3 mb-4"
+                >
                     Listado de facturas y descarga de PDF, XML, y documentos asociados
-                </h2>
+                </motion.h2>
             </div>
             <Divider />
-            <div className="flex flex-col gap-4 mt-3 max-w-4xl mx-auto">
-                <div className="flex gap-3 items-end flex-wrap sm:flex-nowrap">
+            <div className="flex flex-col gap-4 mt-6 max-w-5xl mx-auto">
+                <motion.div
+                    initial={{
+                        y: -10,
+                        opacity: 0
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                    transition={{
+                        delay: 0.4
+                    }}
+                    className="flex gap-3 items-end flex-wrap sm:flex-nowrap"
+                >
                     <QueryInput placeholder="Buscar por folio..." />
-                    <Select className="w-full sm:w-fit sm:min-w-44" placeholder="Todos los estatus">
+                    <Select
+                        className="w-full sm:w-fit sm:min-w-44"
+                        placeholder="Todos los estatus"
+                        value={status}
+                        onChange={handleStatusChange}
+                        onClear={() => handleStatusChange(null)}
+                    >
                         <Label>
-                            Filtrar por estatus
+                            Estatus
                         </Label>
                         <Select.Trigger>
                             <Select.Value />
@@ -326,84 +395,58 @@ export default function Facturas() {
                         </Select.Trigger>
                         <Select.Popover>
                             <ListBox>
-                                <ListBox.Item>
+                                <ListBox.Item id="Timbrado">
                                     <Label>Timbradas</Label>
                                     <ListBox.ItemIndicator />
                                 </ListBox.Item>
-                                <ListBox.Item>
+                                <ListBox.Item id="Cancelado">
                                     <Label>Canceladas</Label>
                                     <ListBox.ItemIndicator />
                                 </ListBox.Item>
                             </ListBox>
                         </Select.Popover>
                     </Select>
-                    <DateRangePicker className="sm:ml-auto w-full sm:w-fit" endName="endDate" startName="startDate" value={value} onChange={setValue}>
-                        <Label>Filtrar por fecha</Label>
-                        <DateField.Group fullWidth>
-                            <DateField.Input slot="start">
-                                {(segment) => <DateField.Segment segment={segment} />}
-                            </DateField.Input>
-                            <DateRangePicker.RangeSeparator />
-                            <DateField.Input slot="end">
-                                {(segment) => <DateField.Segment segment={segment} />}
-                            </DateField.Input>
-                            <DateField.Suffix>
-                                <DateRangePicker.Trigger>
-                                    <DateRangePicker.TriggerIndicator />
-                                </DateRangePicker.Trigger>
-                            </DateField.Suffix>
-                        </DateField.Group>
-                        <DateRangePicker.Popover>
-                            <RangeCalendar aria-label="Filtro-fecha">
-                                <RangeCalendar.Header>
-                                    <RangeCalendar.YearPickerTrigger>
-                                        <RangeCalendar.YearPickerTriggerHeading />
-                                        <RangeCalendar.YearPickerTriggerIndicator />
-                                    </RangeCalendar.YearPickerTrigger>
-                                    <RangeCalendar.NavButton slot="previous" />
-                                    <RangeCalendar.NavButton slot="next" />
-                                </RangeCalendar.Header>
-                                <RangeCalendar.Grid>
-                                    <RangeCalendar.GridHeader>
-                                        {(day) => <RangeCalendar.HeaderCell>{day}</RangeCalendar.HeaderCell>}
-                                    </RangeCalendar.GridHeader>
-                                    <RangeCalendar.GridBody>
-                                        {(date) => <RangeCalendar.Cell date={date} />}
-                                    </RangeCalendar.GridBody>
-                                </RangeCalendar.Grid>
-                                <RangeCalendar.YearPickerGrid>
-                                    <RangeCalendar.YearPickerGridBody>
-                                        {({ year }) => <RangeCalendar.YearPickerCell year={year} />}
-                                    </RangeCalendar.YearPickerGridBody>
-                                </RangeCalendar.YearPickerGrid>
-                            </RangeCalendar>
-                        </DateRangePicker.Popover>
-                    </DateRangePicker>
-                </div>
-                <DataTable
-                    columns={columns}
-                    items={data?.data ?? []}
-                    getRowId={(invoice) => invoice.uuid}
-                    isLoading={isLoading}
-                    isValidating={isValidating}
-                    skeletonRows={6}
-                    ariaLabel="Listado de facturas"
-                    emptyState={
-                        <>
-                            <FaFileInvoice className="mt-4 text-4xl text-datia-primary opacity-60" />
-                            <span className="text-datia-primary opacity-60">
-                                No se encontraron facturas
-                            </span>
-                        </>
-                    }
-                    pagination={{
-                        currentPage,
-                        lastPage,
-                        from: data?.from,
-                        to: data?.to,
-                        total: data?.total,
+                    <DateRangeFilter variant="split" className="sm:ml-auto w-full sm:w-fit" />
+                </motion.div>
+                <motion.div
+                    className="w-full"
+                    initial={{
+                        y: -10,
+                        opacity: 0
                     }}
-                />
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                    transition={{
+                        delay: 0.6
+                    }}
+                >
+                    <DataTable
+                        columns={columns}
+                        items={data?.data ?? []}
+                        getRowId={(invoice) => invoice.uuid}
+                        isLoading={isLoading}
+                        isValidating={isValidating}
+                        skeletonRows={6}
+                        ariaLabel="Listado de facturas"
+                        emptyState={
+                            <>
+                                <FaFileInvoice className="mt-4 text-4xl text-datia-primary opacity-60" />
+                                <span className="text-datia-primary opacity-60">
+                                    No se encontraron facturas
+                                </span>
+                            </>
+                        }
+                        pagination={{
+                            currentPage,
+                            lastPage,
+                            from: data?.from,
+                            to: data?.to,
+                            total: data?.total,
+                        }}
+                    />
+                </motion.div>
             </div>
         </div>
     )
