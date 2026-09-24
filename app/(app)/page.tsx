@@ -5,6 +5,7 @@ import { Button, Card, Chip } from "@heroui/react";
 import Link from "next/link";
 import { FaArrowRight, FaBagShopping, FaFileInvoice } from "react-icons/fa6";
 import { motion } from 'framer-motion'
+import clsx from "clsx";
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -25,8 +26,8 @@ export default function Dashboard() {
         }}
       >
         Hola,
-        <span className="text-datia-primary font-extrabold text-5xl ml-1">
-          {user?.name ?? ""}
+        <span className="text-datia-primary font-extrabold text-5xl ml-2 capitalize">
+          {user?.customer?.name?.toLowerCase() ?? ""}
         </span>
       </motion.h1>
       <motion.h2
@@ -128,9 +129,12 @@ export default function Dashboard() {
             delay: 0.8
           }}
         >
-          <p className="text-datia-gray text-sm font-semibold">SALDO PENDIENTE</p>
-          <p className=" text-3xl font-semibold text-green-700">
-            $10,000.00
+          <p className="text-datia-gray text-sm font-semibold">Saldo Pendiente</p>
+          <p className={clsx(Number(user?.customer?.current_balance ?? 0) > 0 && "text-red-800!","text-3xl font-semibold text-green-800")}>
+            $
+            {
+              Number(user?.customer?.current_balance ?? 0).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})
+            }
           </p>
         </motion.div>
         <motion.div 
@@ -145,7 +149,7 @@ export default function Dashboard() {
             delay: 1
           }}
         >
-          <p className="text-datia-gray text-sm font-semibold">PEDIDOS EN CURSO</p>
+          <p className="text-datia-gray text-sm font-semibold">Pedidos En Curso</p>
           <p className=" text-3xl font-semibold text-datia-primary">
             2
           </p>
