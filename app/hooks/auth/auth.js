@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import { axios } from "@/lib/axios";
+import { axios, axiosBase } from "@/lib/axios";
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -15,9 +15,9 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     error,
     mutate,
     isLoading,
-  } = useSWR("api/portal/me", () =>
+  } = useSWR("/me", () =>
     axios
-      .get("api/portal/me")
+      .get("/me")
       .then((res) => res.data)
       .catch((error) => {
         if (error.response.status !== 409) throw error;
@@ -25,7 +25,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
       .finally(() => setLoading(false))
   );
 
-  const csrf = () => axios.get("sanctum/csrf-cookie");
+  const csrf = () => axiosBase.get("sanctum/csrf-cookie");
 
   const login = async ({ setErrors, setStatus, ...props }) => {
     // Planta la cookie XSRF-TOKEN antes de mandar el POST.
@@ -35,7 +35,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
     setStatus(null);
 
     try {
-      await axios.post("api/portal/login", props);
+      await axios.post("/login", props);
       await mutate();
       router.replace("/");
     } catch (error) {
@@ -48,7 +48,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated } = {}) => {
   const logout = async () => {
     try {
       if (!error) {
-        await axios.post("api/portal/logout");
+        await axios.post("/logout");
       }
     } finally {
       // No usamos mutate() a secas: eso revalida contra /me, que ahora
