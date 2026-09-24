@@ -86,7 +86,10 @@ export default function Header() {
                             x: 0,
                             opacity: 1
                         }}
-                        className="my-auto top-1 left-3 rounded-full  xl:hidden fixed z-50"
+                        className={clsx(
+                            "my-auto top-1 left-3 rounded-full  xl:hidden fixed z-50 transition-all",
+                            isScrolled && "top-3 left-4 shadow-lg"
+                        )}
                     >
                         <Button size="lg" className="bg-white p-7 text-datia-primary/85" isIconOnly>
                             <FaListUl className="scale-[1.6]" />
@@ -112,7 +115,7 @@ export default function Header() {
                                     </Drawer.Heading>
                                 </Drawer.Header>
                                 <Drawer.Body>
-                                    <Tabs className="w-full ml-1 mt-8" variant="secondary" orientation="vertical" align="start" selectedKey={tab} onSelectionChange={setTab}>
+                                    <Tabs className="w-full mt-8" variant="secondary" orientation="vertical" align="start" selectedKey={tab} onSelectionChange={setTab}>
                                         <Tabs.ListContainer className="">
                                             <Tabs.List
                                                 className="
@@ -226,7 +229,7 @@ export default function Header() {
                         </Popover.Trigger>
                         <Popover.Content>
                             <Popover.Dialog>
-                                <Popover.Heading className="font-semibold">{user?.name} - {user?.customer?.name}</Popover.Heading>
+                                <Popover.Heading className="font-semibold">{user?.customer?.name}</Popover.Heading>
                                 <div className="flex flex-col">
                                     <Button fullWidth className="rounded-md mt-2 mb-1 bg-transparent hover:bg-datia-gray/20 text-black/70 flex justify-evenly" onPress={() => router.push("/config")}>
                                         <p className="text-center">
