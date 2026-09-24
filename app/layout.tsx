@@ -29,39 +29,39 @@ export default function RootLayout({
   }, [loading, user, redirectPath, router]);
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if (localStorage.getItem('primary-color')) {
-      document.documentElement.style.setProperty("--datia-primary", localStorage.getItem('primary-color')?.replaceAll(',', ' ') || '0 20 145');
-    }
-    if (localStorage.getItem('secondary-color')) {
-      document.documentElement.style.setProperty("--datia-secondary", localStorage.getItem('secondary-color')?.replaceAll(',', ' ') || '2 212 214');
-    }
+  //   if (localStorage.getItem('primary-color')) {
+  //     document.documentElement.style.setProperty("--datia-primary", localStorage.getItem('primary-color')?.replaceAll(',', ' ') || '0 20 145');
+  //   }
+  //   if (localStorage.getItem('secondary-color')) {
+  //     document.documentElement.style.setProperty("--datia-secondary", localStorage.getItem('secondary-color')?.replaceAll(',', ' ') || '2 212 214');
+  //   }
 
-  }, [])
+  // }, [])
 
-  useEffect(() => {
-    if(!user?.preferences?.primary_color && !user?.preferences?.secondary_color) return
+  // useEffect(() => {
+  //   if(!user?.preferences?.primary_color && !user?.preferences?.secondary_color) return
 
-    if(user.preferences.primary_color){
+  //   if(user.preferences.primary_color){
 
-      document.documentElement.style.setProperty("--datia-primary", user.preferences.primary_color.replaceAll(',', ' '));
+  //     document.documentElement.style.setProperty("--datia-primary", user.preferences.primary_color.replaceAll(',', ' '));
 
-      if(!localStorage.getItem('primary-color') || localStorage.getItem('primary-color') != user.preferences.primary_color){
-        localStorage.setItem('primary-color', user.preferences.primary_color)
-      }
-    }
-    if(user.preferences.secondary_color){
+  //     if(!localStorage.getItem('primary-color') || localStorage.getItem('primary-color') != user.preferences.primary_color){
+  //       localStorage.setItem('primary-color', user.preferences.primary_color)
+  //     }
+  //   }
+  //   if(user.preferences.secondary_color){
 
-      document.documentElement.style.setProperty("--datia-secondary", user.preferences.secondary_color.replaceAll(',', ' '));
+  //     document.documentElement.style.setProperty("--datia-secondary", user.preferences.secondary_color.replaceAll(',', ' '));
       
-      if(!localStorage.getItem('secondary-color') || localStorage.getItem('secondary-color') != user.preferences.secondary_color){
-        localStorage.setItem('secondary-color', user.preferences.secondary_color)
-      }
-    }
+  //     if(!localStorage.getItem('secondary-color') || localStorage.getItem('secondary-color') != user.preferences.secondary_color){
+  //       localStorage.setItem('secondary-color', user.preferences.secondary_color)
+  //     }
+  //   }
 
 
-  }, [user?.preferences?.primary_color, user?.preferences?.secondary_color])
+  // }, [user?.preferences?.primary_color, user?.preferences?.secondary_color])
 
 
   if (loading) {
