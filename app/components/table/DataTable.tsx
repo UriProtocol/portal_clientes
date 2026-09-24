@@ -6,6 +6,7 @@ import {
     Skeleton,
     Spinner,
     Table,
+    type SortDescriptor,
 } from "@heroui/react"
 import clsx from "clsx"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -16,6 +17,7 @@ export type DataTableColumn<T extends object> = {
     key: string
     label: string
     isRowHeader?: boolean
+    sortable?: boolean
     render?: (item: T) => ReactNode
 }
 
@@ -129,6 +131,29 @@ export default function DataTable<T extends object>({
         router.push(`${pathname}?${params.toString()}`, { scroll: false })
     }, [pathname, router, searchParams])
 
+    const sortBy = searchParams.get("sortBy")
+    const sortDir = searchParams.get("sortDirection")
+    const sortDirection = useMemo(() => {
+        return sortDir === "desc" ? "descending" : "ascending"
+    }, [sortDir])
+
+    const sortDescriptor: SortDescriptor | undefined = sortBy
+        ? {
+            column: sortBy,
+            direction:
+                sortDirection === "descending" ? "descending" : "ascending",
+        }
+        : undefined
+
+    const handleSortChange = useCallback((descriptor: SortDescriptor) => {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set("sortBy", String(descriptor.column))
+        const sortDirection = descriptor.direction === "descending" ? "desc" : "asc"
+        params.set("sortDirection", sortDirection)
+        params.set("page", "1")
+        router.push(`${pathname}?${params.toString()}`, { scroll: false })
+    }, [pathname, router, searchParams])
+
     const isPaginationDisabled =
         showSkeleton ||
         (disableWhileValidating && isValidating)
@@ -143,15 +168,28 @@ export default function DataTable<T extends object>({
                         : "transition-opacity",
                 )}
             >
-                <Table.Content aria-label={ariaLabel}>
+                <Table.Content
+                    aria-label={ariaLabel}
+                    sortDescriptor={sortDescriptor}
+                    onSortChange={handleSortChange}
+                >
                     <Table.Header columns={columns} className={"bg-transparent"}>
                         {(column) => (
                             <Table.Column
                                 id={column.key}
                                 isRowHeader={column.isRowHeader}
+                                allowsSorting={column.sortable}
                                 className={"text-datia-primary/60 font-semibold"}
                             >
-                                {column.label}
+                                {column.sortable
+                                    ? ({ sortDirection }) => (
+                                        <Table.SortableColumnHeader
+                                            sortDirection={sortDirection}
+                                        >
+                                            {column.label}
+                                        </Table.SortableColumnHeader>
+                                    )
+                                    : column.label}
                             </Table.Column>
                         )}
                     </Table.Header>
@@ -254,7 +292,7 @@ export default function DataTable<T extends object>({
                                     }
                                 >
                                     <Pagination.PreviousIcon />
-                                    Prev
+                                    Prev.
                                 </Pagination.Previous>
                             </Pagination.Item>
 
@@ -307,7 +345,7 @@ export default function DataTable<T extends object>({
                                         )
                                     }
                                 >
-                                    Next
+                                    Sig.
                                     <Pagination.NextIcon />
                                 </Pagination.Next>
                             </Pagination.Item>
