@@ -2,81 +2,172 @@
 import Divider from '@/components/misc/Divider'
 import ImagePreview from '@/components/misc/ImagePreview'
 import { useAuth } from '@/hooks/auth/auth'
+import PasswordForm from './PasswordForm'
 import { Button, Card } from '@heroui/react'
-import {motion} from 'framer-motion'
+import { motion } from 'framer-motion'
+import { FaImage, FaXmark } from 'react-icons/fa6'
 import { FaSave } from 'react-icons/fa'
-import { FaImage, FaX, FaXmark } from 'react-icons/fa6'
 
-export default function Config(){
+export default function Config() {
 
-    const {user} = useAuth()
+    const { user } = useAuth()
+    const customer = user?.customer
 
     return (
         <>
             <div className="max-w-4xl mx-auto mt-2">
                 <motion.h1
-                        className="font-semibold text-4xl"
-                        initial={{
-                            y: -10,
-                            opacity: 0
-                        }}
-                        animate={{
-                            y: 0,
-                            opacity: 1
-                        }}
-                    >
-                        Configuración
-                    </motion.h1>
-                    <motion.h2
-                        initial={{
-                            y: -10,
-                            opacity: 0
-                        }}
-                        animate={{
-                            y: 0,
-                            opacity: 1
-                        }}
-                        transition={{
-                            delay: 0.2
-                        }}
-                        className="text-datia-gray my-3"
-                    >
-                        Administra la imagen de perfil y la contraseña de acceso al portal. Revisa tus datos y tu información fiscal
-                    </motion.h2>
+                    className="font-semibold text-4xl"
+                    initial={{
+                        y: -10,
+                        opacity: 0
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                >
+                    Configuración
+                </motion.h1>
+                <motion.h2
+                    initial={{
+                        y: -10,
+                        opacity: 0
+                    }}
+                    animate={{
+                        y: 0,
+                        opacity: 1
+                    }}
+                    transition={{
+                        delay: 0.2
+                    }}
+                    className="text-datia-gray my-3"
+                >
+                    Administra la imagen de perfil y la contraseña de acceso al portal. Revisa tus datos y tu información fiscal
+                </motion.h2>
             </div>
             <Divider />
-            <Card className=' max-w-5xl mx-auto mt-4 flex flex-row justify-between'>
-                <div className='w-full grid gap-4'>
+            <Card className=' max-w-5xl mx-auto mt-6 flex md:flex-row justify-between'>
+                <div className='w-full flex flex-col justify-between gap-4'>
                     <p className=' font-semibold text-xl'>Mi cuenta</p>
-                    <div className='flex gap-4'>
-                        <ImagePreview className='size-40'/>
-                        <div className='flex gap-5 flex-col justify-center'>
+                    <div className='flex flex-col sm:flex-row gap-4'>
+                        <ImagePreview className=' size-36 lg:size-48 mx-auto' />
+                        <div className='flex gap-5 flex-col justify-center w-full'>
                             <p className='font-semibold text-datia-gray'>{user?.customer?.name ?? ""}</p>
                             <p className=' text-sm text-datia-gray font-semibold'>Usuario: <span className=' py-1.5 px-3 bg-datia-gray/10 rounded-2xl'>{user?.name}</span></p>
                             <p className=' text-sm text-datia-gray font-semibold'>Correo: <span className=' py-1.5 px-3 bg-datia-gray/10 rounded-2xl'>{user?.email}</span></p>
                             <p></p>
                         </div>
                     </div>
-                    <motion.div layout className='flex gap-4'>
+                    <motion.div layout className='flex gap-3'>
                         <Button className={"w-full"} size='lg'>
                             <FaImage />
                             Subir imagen
                         </Button>
-                        {/* <Button variant='tertiary' size='lg'>
+                        <Button isDisabled variant='tertiary' size='lg'>
                             <FaXmark />
                             Quitar
                         </Button>
                         <Button isDisabled className={"w-full"} variant='secondary' size='lg'>
                             <FaSave />
                             Guardar cambios
-                        </Button> */}
+                        </Button>
                     </motion.div>
                 </div>
-                <Divider variant='vertical'/>
-                <div className='w-full'>asdasd</div>
+                <Divider variant='vertical' className='hidden md:block' />
+                <Divider variant='horizontal' className='md:hidden my-4' />
+                <PasswordForm />
             </Card>
-            <Card className=' max-w-5xl mx-auto mt-4 grid gap-4 grid-cols-2'>
-                <p className=' font-semibold text-xl'>Datos e información fiscal</p>
+            <Card className=' max-w-5xl mx-auto mt-8 flex flex-col md:flex-row justify-between md:gap-4'>
+                <div className='w-full min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-3 content-start'>
+                    <p className=' font-semibold text-lg sm:text-xl sm:col-span-2 mb-1 sm:mb-3'>Información de contacto y dirección</p>
+
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Correo(s) electrónico(s)</p>
+                        {customer?.emails?.length ? (
+                            <ul className='list-disc ml-6 text-datia-gray break-all'>
+                                {customer.emails.map((email: string) => (
+                                    <li key={email}>{email}</li>
+                                ))}
+                            </ul>
+                        ) : <p className='text-datia-gray ml-3 wrap-break-word'>-</p>}
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Número(s) de teléfono</p>
+                        {customer?.phones?.length ? (
+                            <ul className='list-disc ml-6 text-datia-gray break-all'>
+                                {customer.phones.map((phone: { prefix: string | null, number: string | null }, index: number) => (
+                                    <li key={index}>{[phone.prefix, phone.number].filter(Boolean).join(" ")}</li>
+                                ))}
+                            </ul>
+                        ) : <p className='text-datia-gray ml-3 wrap-break-word'>-</p>}
+                    </div>
+
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Estado</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.state || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Ciudad</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.city || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Localidad</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.locality || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Colonia</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.suburb || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Calle</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.street || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Código Postal</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.code_zip || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Número Exterior</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.outer_number || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Número Interior</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.inner_number || "-"}</p>
+                    </div>
+                </div>
+                <Divider variant='vertical' className='hidden md:block' />
+                <Divider variant='horizontal' className='md:hidden my-4' />
+                <div className='w-full min-w-0 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 content-start'>
+                    <p className=' font-semibold text-black/80 text-lg sm:text-xl sm:col-span-2 mb-1 sm:mb-2'>Información fiscal y condiciones financieras</p>
+
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Nombre</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.name || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Razón Social</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.business_name || "-"}</p>
+                    </div>
+
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>RFC</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{customer?.rfc || "-"}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Régimen Fiscal</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{[customer?.tax_regime, customer?.tax_regime_description].filter(Boolean).join(" - ") || "-"}</p>
+                    </div>
+
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Límite de crédito</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>${Number(customer?.credit_limit ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                    </div>
+                    <div className='grid gap-1 w-full min-w-0 text-sm'>
+                        <p className='font-semibold text-black/80'>Plazo</p>
+                        <p className='text-datia-gray ml-3 wrap-break-word'>{(customer?.early_payment_days != null ? `${customer.early_payment_days} días` : "") || "-"}</p>
+                    </div>
+                </div>
             </Card>
         </>
     )
