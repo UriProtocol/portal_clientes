@@ -164,14 +164,14 @@ export default function Header() {
                 </Drawer>
                 <div
                     className={clsx(
-                        "fixed top-1 right-3 flex gap-2 items-center justify-end z-50 rounded-2xl transition-all",
-                        isScrolled && "top-3 right-4"
+                        "fixed top-2 right-3 flex gap-2 items-center justify-end z-50 rounded-2xl transition-all",
+                        isScrolled && "top-3.5 right-4"
                     )}
                 >
                     <Popover>
                         <Popover.Trigger>
                             <motion.div
-                                className={clsx("p-1.5 bg-white rounded-full", isScrolled && "shadow-lg")}
+                                className={clsx(" rounded-full", isScrolled && "shadow-lg")}
                                 initial={{
                                     x: 10,
                                     opacity: 0
@@ -207,7 +207,7 @@ export default function Header() {
                     <Popover>
                         <Popover.Trigger>
                             <motion.div
-                                className={clsx("p-1.5 rounded-4xl bg-white", isScrolled && "shadow")}
+                                className={clsx(" rounded-4xl", isScrolled && "shadow")}
                                 initial={{
                                     x: 20,
                                     opacity: 0
@@ -220,16 +220,36 @@ export default function Header() {
                                 <Button
                                     variant="tertiary"
                                     size="lg"
-                                    className="px-6"
+                                    className={clsx("py-6",!!user?.image_url && "ps-2")}
                                 >
-                                    Mi perfil
+                                    {
+                                        !!user?.image_url && (
+                                            <img
+                                                src={user?.image_url}
+                                                alt="Imagen de perfil"
+                                                height={35}
+                                                width={35}
+                                                className="rounded-full mr-2"
+                                            />
+                                        )
+                                    }
+                                    <p className="">{user?.name}</p>
                                     <FaChevronDown className=" ml-2" />
                                 </Button>
                             </motion.div>
                         </Popover.Trigger>
                         <Popover.Content>
                             <Popover.Dialog>
-                                <Popover.Heading className="font-semibold">{user?.customer?.name}</Popover.Heading>
+                                <Popover.Heading>
+                                    <div className="flex flex-col gap-2 items-center mb-2">
+                                        <p className="font-semibold text-base">
+                                            {user?.name}
+                                        </p>
+                                        <p className="text-xs text-datia-gray">
+                                            {user?.customer?.name}
+                                        </p>
+                                    </div>
+                                </Popover.Heading>
                                 <div className="flex flex-col">
                                     <Button fullWidth className="rounded-md mt-2 mb-1 bg-transparent hover:bg-datia-gray/20 text-black/70 flex justify-evenly" onPress={() => router.push("/config")}>
                                         <p className="text-center">
@@ -275,7 +295,7 @@ export default function Header() {
             </div>
             <motion.div
                 className={clsx(
-                    "bg-white p-1.5 fixed hidden xl:block z-50 w-full max-w-4xl rounded-3xl transition-shadow duration-300 ease-out",
+                    "bg-white p-1.5 fixed hidden xl:block z-40 w-fit rounded-3xl transition-shadow duration-300 ease-out",
                     isScrolled && "shadow"
                 )}
                 initial={{
@@ -303,14 +323,14 @@ export default function Header() {
                         >
                             <Tabs.Tab id="/">
                                 <Link href={"/"} className=" text-[1.05rem] w-full flex items-center justify-center gap-1.5">
-                                    <FaHome className=" mr-2 text-lg"/>
+                                    <FaHome className=" mr-2 text-lg hidden min-[1400px]:block"/>
                                     Inicio
                                 </Link>
                                 <Tabs.Indicator />
                             </Tabs.Tab>
                             <Tabs.Tab id="/pedidos">
                                 <Link href={"/pedidos"} className={clsx(" text-[1.05rem] text-datia-secondary flex items-center justify-center gap-1.5 text-nowrap", tab == "/pedidos" && "text-white!")}>
-                                    <FaBagShopping className=" mr-2 text-lg"/>
+                                    <FaBagShopping className=" mr-2 text-lg "/>
                                     Haz tu pedido
                                 </Link>
                                 <Tabs.Separator />
@@ -318,7 +338,7 @@ export default function Header() {
                             </Tabs.Tab>
                             <Tabs.Tab id="/seguimiento">
                                 <Link href={"/seguimiento"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
-                                    <FaBox className=" mr-2 text-lg"/>
+                                    <FaBox className=" mr-2 text-lg hidden min-[1400px]:block"/>
                                     Seguimiento
                                 </Link>
                                 <Tabs.Separator />
@@ -326,7 +346,7 @@ export default function Header() {
                             </Tabs.Tab>
                             <Tabs.Tab id="/estado-cuenta">
                                 <Link href={"/estado-cuenta"} className=" text-[1.05rem] flex items-center justify-center gap-1.5 text-nowrap">
-                                    <FaDollarSign className=" mr-2 text-lg"/>
+                                    <FaDollarSign className=" mr-2 text-lg hidden min-[1400px]:block"/>
                                     Estado de cuenta
                                 </Link>
                                 <Tabs.Separator />
@@ -334,7 +354,7 @@ export default function Header() {
                             </Tabs.Tab>
                             <Tabs.Tab id="/facturas">
                                 <Link href={"/facturas"} className=" text-[1.05rem] flex items-center justify-center gap-1.5">
-                                    <FaFileInvoice className=" mr-2 text-lg"/>
+                                    <FaFileInvoice className=" mr-2 text-lg hidden min-[1400px]:block"/>
                                     Facturas
                                 </Link>
                                 <Tabs.Separator />
