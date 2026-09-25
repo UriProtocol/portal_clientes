@@ -47,7 +47,7 @@ function MovementSection({ title, folioLabel, referenceLabel, movements }: Movem
 
     return (
         <div className="grid mt-4">
-            <p className=" mb-3 font-semibold text-base">{title}</p>
+            <p className=" mb-3 font-semibold text-base text-black/80">{title}</p>
             <div className="grid grid-cols-4 gap-x-3 min-w-sm">
                 <p>{folioLabel}</p>
                 <p>Fecha</p>
@@ -121,7 +121,7 @@ export default function DocumentInfoModal({ document: doc }: { document: Stateme
                             <Modal.Body>
                                 <div className="p-4 bg-datia-gray/10 rounded-2xl grid grid-cols-3 gap-3 items-start min-w-sm overflow-x-auto">
                                     <div className="grid col-span-2">
-                                        <p className="font-semibold text-lg mb-1">Documento {doc.branch} - {doc.id}</p>
+                                        <p className="font-semibold text-lg mb-1 text-black/80">Documento {doc.branch} - {doc.id}</p>
                                         <p className="text-sm">Factura</p>
                                         <p className="font-semibold mb-2">{doc.invoice}</p>
                                         <p className="text-sm">Estatus</p>
@@ -172,7 +172,6 @@ export default function DocumentInfoModal({ document: doc }: { document: Stateme
                                     movements={returns}
                                 />
                             </Modal.Body>
-                            <Modal.Footer />
                         </Modal.Dialog>
                     </Modal.Container>
                 </Modal.Backdrop>

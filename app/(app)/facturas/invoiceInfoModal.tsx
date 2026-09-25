@@ -199,7 +199,7 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                             <Modal.Body>
                                 <div className="p-4 bg-datia-gray/10 rounded-2xl grid grid-cols-3 gap-3 items-start min-w-sm overflow-x-auto">
                                     <div className="grid col-span-2">
-                                        <p className="font-semibold text-lg mb-1">Factura {invoice.serie} - {invoice.folio}</p>
+                                        <p className="font-semibold text-lg mb-1 text-black/80">Factura {invoice.serie} - {invoice.folio}</p>
                                         <p className="text-sm">Emisor</p>
                                         <p className="font-semibold mb-2">{xml?.Emisor?.Nombre ?? "No disponible"}</p>
                                         <p className="text-sm">Método de pago</p>
@@ -228,7 +228,7 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                 {
                                     invoice.tickets.length > 0 && (
                                         <div className="grid mt-4">
-                                            <p className=" mb-3 font-semibold text-base">Ticket(s) de la factura:</p>
+                                            <p className=" mb-3 font-semibold text-base text-black/80">Ticket(s) de la factura:</p>
                                             <div className="grid grid-cols-5 gap-x-3 min-w-sm">
                                                 <p>Folio</p>
                                                 <p>Fecha</p>
@@ -270,7 +270,7 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                 {
                                     creditNotes.length > 0 && (
                                         <div className="grid mt-4">
-                                            <p className=" mb-3 font-semibold text-base">Nota(s) de crédito de la factura:</p>
+                                            <p className=" mb-3 font-semibold text-base text-black/80">Nota(s) de crédito de la factura:</p>
                                             <div className="grid grid-cols-5 gap-x-3 min-w-sm">
                                                 <p>Folio</p>
                                                 <p>Fecha</p>
@@ -322,7 +322,7 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                 {
                                     paymentComplements.length > 0 && (
                                         <div className="grid mt-4">
-                                            <p className=" mb-3 font-semibold text-base">Complemento(s) de pago de la factura:</p>
+                                            <p className=" mb-3 font-semibold text-base text-black/80">Complemento(s) de pago de la factura:</p>
                                             <div className="grid grid-cols-5 gap-x-3 min-w-sm">
                                                 <p>Folio</p>
                                                 <p>Fecha</p>
