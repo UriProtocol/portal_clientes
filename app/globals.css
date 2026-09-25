@@ -81,3 +81,108 @@ html,body {
   --datia-secondary: 208 135 0;
   --datia-gray: 115 122 131;
 }
+/* ---------- LoadingApp ---------- */
+.loading-app__bg {
+  background:
+    radial-gradient(circle at 20% 20%, rgb(var(--datia-primary) / 0.12), transparent 55%),
+    radial-gradient(circle at 80% 80%, rgb(var(--datia-secondary) / 0.14), transparent 55%),
+    linear-gradient(160deg, #ffffff 0%, #f3f5fb 100%);
+}
+
+.loading-app__blob {
+  position: absolute;
+  width: 26rem;
+  height: 26rem;
+  border-radius: 9999px;
+  filter: blur(70px);
+  opacity: 0.2;
+  animation: loading-float 9s ease-in-out infinite;
+}
+.loading-app__blob--primary {
+  top: -8rem;
+  left: -6rem;
+  background: rgb(var(--datia-primary));
+}
+.loading-app__blob--secondary {
+  bottom: -8rem;
+  right: -6rem;
+  background: rgb(var(--datia-secondary));
+  animation-delay: -4.5s;
+}
+
+.loading-app__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgb(var(--datia-primary)) 140deg,
+    rgb(var(--datia-secondary)) 260deg,
+    transparent 360deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
+  animation: loading-spin 1.4s linear infinite;
+}
+
+
+.loading-app__halo {
+  position: absolute;
+  inset: 12px;
+  border-radius: 9999px;
+  background: rgb(var(--datia-primary) / 0.15);
+  animation: loading-ping 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+.loading-app__halo--delayed {
+  animation-delay: 1.2s;
+}
+
+.loading-app__logo {
+  animation: loading-breathe 2.4s ease-in-out infinite;
+}
+
+.loading-app__dots span {
+  display: inline-block;
+  animation: loading-bounce 1.2s ease-in-out infinite;
+}
+.loading-app__dots span:nth-child(2) { animation-delay: 0.15s; }
+.loading-app__dots span:nth-child(3) { animation-delay: 0.3s; }
+
+.loading-app__bar {
+  background: linear-gradient(90deg, rgb(var(--datia-primary)), rgb(var(--datia-secondary)));
+  animation: loading-slide 1.6s ease-in-out infinite;
+}
+
+@keyframes loading-spin { to { transform: rotate(360deg); } }
+@keyframes loading-ping {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+@keyframes loading-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+@keyframes loading-bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-4px); opacity: 1; }
+}
+@keyframes loading-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+@keyframes loading-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3rem, 2rem) scale(1.1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-app__blob,
+  .loading-app__halo,
+  .loading-app__logo,
+  .loading-app__dots span {
+    animation: none;
+  }
+  .loading-app__ring { animation-duration: 4s; }
+  .loading-app__bar { animation-duration: 3s; }
+}
