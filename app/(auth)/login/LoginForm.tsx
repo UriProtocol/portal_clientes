@@ -109,8 +109,8 @@ const LoginForm = () => {
         <div className="block mt-2">
           <Checkbox isSelected={shouldRemember} onChange={setShouldRemember}>
             <Checkbox.Content>
-              <Checkbox.Control>
-                <Checkbox.Indicator />
+              <Checkbox.Control className="bg-datia-secondary/20 before:bg-datia-secondary">
+                <Checkbox.Indicator/>
               </Checkbox.Control>
               Recordar usuario
             </Checkbox.Content>
@@ -122,7 +122,7 @@ const LoginForm = () => {
             type="submit"
             fullWidth
             size="lg"
-            className={`bg-datia_primary text-white text-lg font-semibold ${manrope.className}`}
+            className={`text-white text-lg font-semibold ${manrope.className}`}
             isPending={isLoadingLogin}
             variant="primary"
           >

@@ -4,22 +4,20 @@ import { Card} from "@heroui/react";
 interface AuthCardProps {
 	logo?: React.ReactNode;
 	children: React.ReactNode;
-}  
+}
 
 export default function AuthCard({ logo, children }: AuthCardProps) {
 	return (
-		<div className="min-h-screen flex flex-col justify-center items-center">
-			 <Card className="p-6 border-none bg-white/95 shadow-none sm:shadow-small min-w-full sm:min-w-[550px] h-screen fixed sm:relative sm:h-auto rounded-none sm:rounded-xl backdrop-blur-md" >
-				<Card.Header className="flex-col items-center ">
-					{logo}
-					<h4 className={`font-semibold text-2xl mb-3 flex justify-start antialiased text-datia-primary`}>¡Bienvenido!</h4>
-					<h4 className={` flex justify-start antialiased text-datia-primary/60`}>Inicia sesión con tus credenciales</h4>
-				</Card.Header>
-				<Card.Content className="overflow-visible py-2 pb-6 justify-center">
-					<div className=" mx-auto mb-4 -mt-16 sm:hidden">{logo}</div>
-					{children}
-				</Card.Content>
-			</Card>
-    	</div>
+		<Card className="relative overflow-hidden p-6 sm:p-8 border-none bg-white shadow-2xl shadow-datia-primary/10 ring-1 ring-slate-200/70 rounded-2xl">
+			<div className="absolute inset-x-0 top-0 h-1.5 bg-linear-to-r from-datia-primary to-yellow-500" />
+			<Card.Header className="flex-col items-start gap-1">
+				{logo}
+				<h4 className="font-bold text-3xl tracking-tight antialiased text-datia-primary">¡Bienvenido!</h4>
+				<p className="antialiased text-slate-500">Inicia sesión con tus credenciales</p>
+			</Card.Header>
+			<Card.Content className="overflow-visible pt-4 pb-2">
+				{children}
+			</Card.Content>
+		</Card>
 	);
 }
