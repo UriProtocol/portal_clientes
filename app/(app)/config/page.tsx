@@ -1,17 +1,116 @@
 "use client"
 import Divider from '@/components/misc/Divider'
+import ImageCropModal from '@/components/misc/ImageCropModal'
 import ImagePreview from '@/components/misc/ImagePreview'
 import { useAuth } from '@/hooks/auth/auth'
+import { axios, axiosBase } from '@/lib/axios'
 import PasswordForm from './PasswordForm'
 import { Button, Card } from '@heroui/react'
+import { isAxiosError } from 'axios'
 import { motion } from 'framer-motion'
+import React, { useRef, useState } from 'react'
+import { toast } from 'sonner'
 import { FaImage, FaXmark } from 'react-icons/fa6'
 import { FaSave } from 'react-icons/fa'
 
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+// Límite del archivo original; el recorte se exporta a 512px en JPEG, muy por debajo de los 2 MB que valida la API
+const MAX_SOURCE_IMAGE_SIZE = 10 * 1024 * 1024
+
 export default function Config() {
 
-    const { user } = useAuth()
+    const { user, mutate } = useAuth()
     const customer = user?.customer
+
+    const fileInputRef = useRef<HTMLInputElement>(null)
+    const [imageFile, setImageFile] = useState<File | null>(null)
+    const [imagePreview, setImagePreview] = useState<string | null>(null)
+    const [cropSource, setCropSource] = useState<string | null>(null)
+    const [isRemovingImage, setIsRemovingImage] = useState(false)
+    const [isSavingImage, setIsSavingImage] = useState(false)
+
+    const currentImage = isRemovingImage ? null : user?.image_url
+    const displayedImage = imagePreview ?? currentImage
+    const hasImageChanges = !!imageFile || isRemovingImage
+
+    const clearSelectedImage = () => {
+        setImageFile(null)
+        setImagePreview(null)
+        // Permite volver a elegir el mismo archivo después de quitarlo
+        if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+
+    const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        // Permite volver a elegir el mismo archivo (p. ej. tras cancelar el recorte)
+        event.target.value = ""
+        if (!file) return
+
+        if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+            toast.error('La imagen debe ser JPG, PNG o WEBP')
+            return
+        }
+        if (file.size > MAX_SOURCE_IMAGE_SIZE) {
+            toast.error('La imagen no debe pesar más de 10 MB')
+            return
+        }
+
+        setCropSource(URL.createObjectURL(file))
+    }
+
+    const closeCropper = () => {
+        if (cropSource) URL.revokeObjectURL(cropSource)
+        setCropSource(null)
+    }
+
+    const handleCropConfirm = (file: File) => {
+        closeCropper()
+        const reader = new FileReader()
+        reader.onload = () => setImagePreview(reader.result as string)
+        reader.readAsDataURL(file)
+        setImageFile(file)
+        setIsRemovingImage(false)
+    }
+
+    const handleRemoveImage = () => {
+        // Primero se descarta la imagen seleccionada; si no hay, se marca la actual para eliminar
+        if (imageFile) clearSelectedImage()
+        else setIsRemovingImage(true)
+    }
+
+    const saveImage = async () => {
+        if (!hasImageChanges) return
+
+        setIsSavingImage(true)
+        const loadingToast = toast.loading(imageFile ? 'Subiendo imagen...' : 'Eliminando imagen...')
+
+        try {
+            await axiosBase.get("sanctum/csrf-cookie")
+            if (imageFile) {
+                const formData = new FormData()
+                formData.append('image', imageFile)
+                await axios.post("/image", formData)
+            } else {
+                await axios.delete("/image")
+            }
+            await mutate()
+            clearSelectedImage()
+            setIsRemovingImage(false)
+            toast.success(imageFile ? 'Imagen actualizada correctamente' : 'Imagen eliminada correctamente')
+        } catch (error) {
+            const response = isAxiosError(error) ? error.response : undefined
+            if (response?.status === 422) {
+                toast.error(response.data.errors?.image?.[0] ?? response.data.message ?? 'La imagen no es válida')
+            } else if (response?.status === 429) {
+                toast.error('Demasiados intentos. Espera un minuto e inténtalo de nuevo')
+            } else {
+                toast.error(response?.data?.message ?? 'Ocurrió un error inesperado al guardar la imagen')
+            }
+        } finally {
+            setIsSavingImage(false)
+            toast.dismiss(loadingToast)
+        }
+    }
 
     return (
         <>
@@ -50,8 +149,8 @@ export default function Config() {
             <Card className=' max-w-5xl mx-auto mt-6 flex md:flex-row justify-between'>
                 <div className='w-full flex flex-col justify-between gap-4'>
                     <p className=' font-semibold text-xl'>Mi cuenta</p>
-                    <div className='flex flex-col sm:flex-row gap-4'>
-                        <ImagePreview className=' size-36 lg:size-48 mx-auto' />
+                    <div className='flex flex-col items-center sm:flex-row gap-4'>
+                        <ImagePreview src={displayedImage} alt='Imagen de perfil' title='Imagen de perfil' className='size-52 mb-4 sm:mb-0 sm:size-40 lg:size-48 mx-auto' />
                         <div className='flex gap-5 flex-col justify-center w-full'>
                             <p className='font-semibold text-datia-gray'>{user?.customer?.name ?? ""}</p>
                             <p className=' text-sm text-datia-gray font-semibold'>Usuario: <span className=' py-1.5 px-3 bg-datia-gray/10 rounded-2xl'>{user?.name}</span></p>
@@ -59,19 +158,74 @@ export default function Config() {
                             <p></p>
                         </div>
                     </div>
-                    <motion.div layout className='flex gap-3'>
-                        <Button className={"w-full"} size='lg'>
-                            <FaImage />
-                            Subir imagen
-                        </Button>
-                        <Button isDisabled variant='tertiary' size='lg'>
-                            <FaXmark />
-                            Quitar
-                        </Button>
-                        <Button isDisabled className={"w-full"} variant='secondary' size='lg'>
-                            <FaSave />
-                            Guardar cambios
-                        </Button>
+                    <ImageCropModal
+                        src={cropSource}
+                        fileName='perfil'
+                        onCancel={closeCropper}
+                        onConfirm={handleCropConfirm}
+                    />
+                    <input
+                        ref={fileInputRef}
+                        type='file'
+                        accept={ALLOWED_IMAGE_TYPES.join(',')}
+                        className='hidden'
+                        onChange={handleImageChange}
+                    />
+                    <motion.div layout className='flex flex-wrap sm:flex-nowrap gap-3'>
+                        <motion.div className='w-full' layout>
+                            <Button className={"w-full"} size='lg' isDisabled={isSavingImage} onPress={() => fileInputRef.current?.click()}>
+                                <FaImage />
+                                Subir imagen
+                            </Button>
+                        </motion.div>
+                        {
+                            (displayedImage) && (
+                                <motion.div
+                                    initial={{
+                                        opacity: 0,
+                                        x: -10
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        x: 0
+                                    }}
+                                    transition={{
+                                        delay: 0.15,
+                                    }}
+                                    layout
+                                    className='w-full sm:w-fit'
+                                >
+                                    <Button className='w-full sm:w-fit' isDisabled={isSavingImage || !displayedImage} variant='tertiary' size='lg' onPress={handleRemoveImage}>
+                                        <FaXmark />
+                                        Quitar
+                                    </Button>
+                                </motion.div>
+                            )
+                        }
+                        {
+                            hasImageChanges && (
+                                <motion.div
+                                    className='w-full'
+                                    layout
+                                    initial={{
+                                        opacity: 0,
+                                        x: -10
+                                    }}
+                                    animate={{
+                                        opacity: 1,
+                                        x: 0
+                                    }}
+                                    transition={{
+                                        delay: 0.3
+                                    }}
+                                >
+                                    <Button isDisabled={!hasImageChanges} isPending={isSavingImage} onPress={saveImage} className={"w-full"} variant='secondary' size='lg'>
+                                        <FaSave />
+                                        Guardar cambios
+                                    </Button>
+                                </motion.div>
+                            )
+                        }
                     </motion.div>
                 </div>
                 <Divider variant='vertical' className='hidden md:block' />
