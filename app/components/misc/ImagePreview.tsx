@@ -13,10 +13,11 @@ export interface ImagePreviewProps {
     /** Layout classes for the outer element (margins, alignment) */
     wrapperClassName?: string
     /** Optional title shown in the modal header */
-    title?: string
+    title?: string,
+    isDisabled?: boolean
 }
 
-export default function ImagePreview({ src, alt = "Imagen", className = "size-24", wrapperClassName = "", title }: ImagePreviewProps) {
+export default function ImagePreview({ src, alt = "Imagen", className = "size-24", wrapperClassName = "", title, isDisabled = false }: ImagePreviewProps) {
 
     // Si la imagen falla al cargar se trata igual que si no hubiera url
     const [failedSrc, setFailedSrc] = useState<string | null>(null)
@@ -33,6 +34,16 @@ export default function ImagePreview({ src, alt = "Imagen", className = "size-24
 
     // Sin imagen no hay nada que ampliar; la miniatura es el elemento exterior
     if (!hasImage) return thumbnail
+
+    if (isDisabled) {
+        return (
+            <img
+                src={src}
+                alt={alt}
+                className={`max-h-[75vh] w-auto max-w-full object-contain rounded-xl ${className}`}
+            />
+        )
+    }
 
     return (
         <Modal>
