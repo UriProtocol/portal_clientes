@@ -101,8 +101,8 @@ export default function BrandAutocomplete({ className }: { className?: string })
                     <SearchField autoFocus name="search" aria-label="Buscar marca">
                         <SearchField.Group>
                             <SearchField.SearchIcon />
-                            <SearchField.Input placeholder='Buscar marca...' />
-                            {isLoading ? <Spinner size='sm' className='mr-2' /> : <SearchField.ClearButton />}
+                            <SearchField.Input placeholder='Buscar marca...'/>
+                            {isLoading ? <Spinner size='sm' className='mr-2 text-datia-primary' /> : <SearchField.ClearButton />}
                         </SearchField.Group>
                     </SearchField>
                     <ListBox
@@ -128,7 +128,7 @@ export default function BrandAutocomplete({ className }: { className?: string })
                             }}
                             className='flex justify-center py-2'
                         >
-                            <Spinner size='sm' />
+                            <Spinner size='sm' className='text-datia-primary'/>
                         </ListBoxLoadMoreItem>
                     </ListBox>
                 </Autocomplete.Filter>

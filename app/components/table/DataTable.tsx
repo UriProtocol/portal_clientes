@@ -270,7 +270,7 @@ export default function DataTable<T extends object>({
                                 : "Cargando..."}
 
                             {isValidating && !showSkeleton && (
-                                <Spinner size="sm" />
+                                <Spinner size="sm" className='text-datia-primary'/>
                             )}
                         </Pagination.Summary>
 

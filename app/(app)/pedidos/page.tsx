@@ -210,7 +210,7 @@ export default function Pedidos() {
                     <ProductDetailModal product={detailProduct} state={detailState} />
                     {(isLoading || isLoadingMore) && (
                         <div className='flex justify-center py-4'>
-                            <Spinner />
+                            <Spinner className='text-datia-primary'/>
                         </div>
                     )}
                 </div>
