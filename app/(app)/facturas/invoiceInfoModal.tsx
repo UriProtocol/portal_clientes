@@ -229,12 +229,12 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                     invoice.tickets.length > 0 && (
                                         <div className="grid mt-4">
                                             <p className=" mb-3 font-semibold text-base text-black/80">Ticket(s) de la factura:</p>
-                                            <div className="grid grid-cols-5 gap-x-3 min-w-sm">
+                                            <div className="grid grid-cols-4 gap-x-3 min-w-sm">
                                                 <p>Folio</p>
                                                 <p>Fecha</p>
                                                 <p className="text-right">Importe</p>
                                                 <p className="text-right">Saldo</p>
-                                                <p></p>
+                                                {/* <p></p> */}
                                                 <div className="col-span-5 my-1">
                                                     <Divider className="h-px!" />
                                                 </div>
@@ -242,12 +242,12 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                                     invoice.tickets.map((ticket) => {
 
                                                         return (
-                                                            <div key={ticket.uuid} className=" py-0.5 col-span-5 grid grid-cols-5 text-[0.8rem] items-center min-w-sm overflow-x-auto">
+                                                            <div key={ticket.uuid} className=" py-0.5 col-span-4 grid grid-cols-4 text-[0.8rem] items-center min-w-sm overflow-x-auto">
                                                                 <div className="font-semibold">{ticket.folio}</div>
                                                                 <div className="">{ticket.created_at.split("T")[0]}</div>
                                                                 <div className="text-right">${Number(ticket.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                                                                 <div className="text-right">${Number(ticket.balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                                                                <div className="flex justify-end">
+                                                                {/* <div className="flex justify-end">
                                                                     <Tooltip delay={300}>
                                                                         <Tooltip.Trigger>
                                                                             <Button onPress={() => handlePrintPDF(ticket.uuid)} variant="tertiary" size="sm" className={"scale-90"} isIconOnly>
@@ -258,7 +258,7 @@ export default function InvoiceInfoModal({ invoice }: { invoice: Invoice }) {
                                                                             <p>Imprimir ticket</p>
                                                                         </Tooltip.Content>
                                                                     </Tooltip>
-                                                                </div>
+                                                                </div> */}
                                                             </div>
                                                         )
                                                     })
