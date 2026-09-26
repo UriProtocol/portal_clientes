@@ -7,7 +7,7 @@ import { FaXmark } from 'react-icons/fa6';
 import { useDebouncedCallback } from 'use-debounce';
 import {motion} from 'framer-motion'
 
-export default forwardRef(function QueryInput({ placeholder }: { placeholder?: string }, ref: React.ForwardedRef<HTMLInputElement>) {
+export default forwardRef(function QueryInput({ placeholder, className = "" }: { placeholder?: string, className?: string }, ref: React.ForwardedRef<HTMLInputElement>) {
 
     const searchParams = useSearchParams();
     const pathname = usePathname();
@@ -35,7 +35,7 @@ export default forwardRef(function QueryInput({ placeholder }: { placeholder?: s
     return (
         <motion.div
             layout
-            className='w-full'
+            className={clsx("w-full", className)}
         >
             <TextField className="w-full" value={query} onChange={e =>{
                 handleSearch(e)
