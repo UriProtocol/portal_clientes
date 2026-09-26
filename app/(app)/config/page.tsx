@@ -175,7 +175,7 @@ export default function Config() {
                         <motion.div className='w-full' layout>
                             <Button className={"w-full"} size='lg' isDisabled={isSavingImage} onPress={() => fileInputRef.current?.click()}>
                                 <FaImage />
-                                Subir imagen
+                                Seleccionar imagen
                             </Button>
                         </motion.div>
                         {
