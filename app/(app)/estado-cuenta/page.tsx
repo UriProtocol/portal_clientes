@@ -280,7 +280,6 @@ export default function EstadoDeCuenta() {
                         const url = window.URL.createObjectURL(
                             new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
                         );
-                        console.log("URL de descarga:", url);
                         const link = document.createElement('a');
                         link.href = url;
                         link.setAttribute('download', `Estado_de_cuenta.xlsx`);
