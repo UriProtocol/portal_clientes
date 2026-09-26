@@ -36,7 +36,7 @@ function Logo({ size = 120 }: { size?: number }) {
 
 export default function LoginPage() {
     return (
-        <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-datia-primary/10">
+        <div className="min-h-screen grid lg:grid-cols-[1.1fr_1fr] bg-datia-primary/5">
             {/* Brand panel */}
             <aside className="relative hidden lg:flex flex-col justify-between overflow-hidden bg-datia-primary p-12 text-white">
                 <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: treadPattern }} />
@@ -81,13 +81,13 @@ export default function LoginPage() {
                     className="absolute inset-0 opacity-60 bg-size-[22px_22px] bg-[radial-gradient(rgb(var(--datia-primary)/0.12)_1px,transparent_1px)]"
                 />
                 {/* Mobile brand header */}
-                <div className="absolute inset-x-0 top-0 h-72 overflow-hidden bg-datia-primary lg:hidden">
+                <div className="absolute inset-x-0 top-0 h-screen overflow-hidden bg-datia-primary lg:hidden">
                     <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: treadPattern }} />
                     <div className="absolute -top-20 -left-20 h-64 w-64 rounded-full bg-yellow-400/25 blur-3xl" />
                     <Tire className="absolute -top-24 -right-24 w-72 text-white/10 animate-[spin_80s_linear_infinite] motion-reduce:animate-none" />
                 </div>
 
-                <div className="relative mb-14 flex flex-col items-center gap-8 lg:hidden">
+                <div className="relative mb-8 flex flex-col items-center gap-8 lg:hidden">
                     <Logo size={96} />
                     <span className="text-sm font-medium tracking-[0.3em] text-white/90">PORTAL DE CLIENTES</span>
                 </div>
