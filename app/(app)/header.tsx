@@ -29,7 +29,7 @@ export default function Header() {
         setTab(pathname)
     }, [pathname])
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 30)
+        const handleScroll = () => setIsScrolled(window.scrollY > 5)
         handleScroll()
         window.addEventListener("scroll", handleScroll)
         return () => window.removeEventListener("scroll", handleScroll)
