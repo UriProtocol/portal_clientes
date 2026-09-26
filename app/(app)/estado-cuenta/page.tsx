@@ -314,7 +314,7 @@ export default function EstadoDeCuenta() {
 
     return (
         <div className="mt-2">
-            <div className=" max-w-4xl mx-auto grid grid-cols-3 mb-2">
+            <div className=" max-w-5xl mx-auto grid grid-cols-3 mb-2">
                 <div className="grid col-span-2">
                     <motion.h1
                         className="font-semibold text-4xl"
@@ -481,9 +481,6 @@ export default function EstadoDeCuenta() {
                     y: 0,
                     opacity: 1
                 }}
-                transition={{
-                    delay: 0.8
-                }}
                 className="flex flex-wrap md:flex-nowrap gap-3 items-end mt-4 mx-auto max-w-5xl"
             >
                 <QueryInput placeholder="Buscar por folio" />
@@ -521,20 +518,7 @@ export default function EstadoDeCuenta() {
                     </div>
                 </div>
             </motion.div>
-            <motion.div
-                initial={{
-                    y: -10,
-                    opacity: 0
-                }}
-                animate={{
-                    y: 0,
-                    opacity: 1
-                }}
-                transition={{
-                    delay: 1
-                }}
-                className="mt-4 mx-auto max-w-5xl"
-            >
+            <div className="max-w-5xl mx-auto mt-4">
                 <DataTable
                     columns={columns}
                     items={documents}
@@ -559,7 +543,7 @@ export default function EstadoDeCuenta() {
                         total: pagination?.total,
                     }}
                 />
-            </motion.div>
+            </div>
         </div>
     )
 }

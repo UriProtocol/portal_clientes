@@ -330,7 +330,7 @@ export default function Facturas() {
 
     return (
         <div className="mt-2">
-            <div className=" max-w-4xl mx-auto">
+            <div className=" max-w-5xl mx-auto">
                 <motion.h1
                     initial={{
                         y: -10,
@@ -362,7 +362,7 @@ export default function Facturas() {
                 </motion.h2>
             </div>
             <Divider />
-            <div className="flex flex-col gap-4 mt-6 max-w-5xl mx-auto">
+            <div className="flex flex-col gap-4 mt-4 max-w-5xl mx-auto">
                 <motion.div
                     initial={{
                         y: -10,
@@ -371,9 +371,6 @@ export default function Facturas() {
                     animate={{
                         y: 0,
                         opacity: 1
-                    }}
-                    transition={{
-                        delay: 0.4
                     }}
                     className="flex gap-3 items-end flex-wrap sm:flex-nowrap"
                 >
@@ -408,20 +405,6 @@ export default function Facturas() {
                     </Select>
                     <DateRangeFilter variant="split" className="sm:ml-auto w-full sm:w-fit" />
                 </motion.div>
-                <motion.div
-                    className="w-full"
-                    initial={{
-                        y: -10,
-                        opacity: 0
-                    }}
-                    animate={{
-                        y: 0,
-                        opacity: 1
-                    }}
-                    transition={{
-                        delay: 0.6
-                    }}
-                >
                     <DataTable
                         columns={columns}
                         items={data?.data ?? []}
@@ -446,7 +429,6 @@ export default function Facturas() {
                             total: data?.total,
                         }}
                     />
-                </motion.div>
             </div>
         </div>
     )
